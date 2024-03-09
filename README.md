@@ -13,11 +13,11 @@ Just put one of the binaries from the Release section into a folder registered i
 
 Then rename the Binary, `tnt`
 
-if you don't trust the code, you can build your own version, if you have at least go 1.21.3 installed.
+if you don't trust the binaries further down is a section on how to create your own builds.
 
 
 ## usage:
-for now this CLI (Command line interface only)
+for now this is CLI (Command line interface) only
 
 ```bash
 # first create some tasks 
@@ -49,18 +49,27 @@ tnt switch "important project nr 1"
 now the timer for "important project nr 1" is running until you either start
 another timer via `s`, `start` or `switch`
 
-or, it you want to stop the timer (for example because your shift is over) call:
+or, if you want to stop the timers (for example because your shift is over) call:
 
 ```bash
 tnt stop
 ```
 
 ## Switching to another task.
-switching tasks is as easy as calling 
+switching tasks is as easy as calling
 ```bash
 tnt s "what ever is your new task"
 ```
 Should another timer be running currently, it will be stopped and a new timer for the new task is started.
+
+
+## Getting a list of Tasks and Times
+just run.
+
+```bash
+tnt times sum 
+```
+and you'll get a list of all tasks and how much time you've spend with them in total.
 
 
 ## Autocompletion:
@@ -81,3 +90,11 @@ Check the following command for more autocompletion options
 ```bash
 tnt completion 
 ```
+
+## Building from Source
+For that, you need to install Go 1.21.3 or later.
+Clone this repo. 
+Enter the Clones Folder
+Run `go mod tidy` to download the missing packages
+and build The Binaries `go build`
+
