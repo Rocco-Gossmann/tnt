@@ -25,10 +25,10 @@ func main() {
 	// TO make sure the DB Connection can be closed safely, we need ot use panics
 	// (os.Exit is bad)
 	// but we don't want to overwhelm the user with some uggly messages, when a panic
-	// We'll print a nice looking error instead
 	// was caused on purpose. So if a Pnaic was caused by a utils.ControlledPanic,
+	// We'll print a nice looking error instead
 	//
-	// the go_throwable (ex) package helps us to achieve this easy
+	// the go_throwable (ex) package helps to achieve this easy
 	ex.Try(func() any {
 
 		myCMD := cobra.Command{
@@ -57,7 +57,7 @@ func main() {
 				fmt.Println(ce.Msg)
 				hadAPanic = true
 			} else {
-				fmt.Println("PANIC !!!! *** Runs in Circles ***")
+				fmt.Println("PANIC !!!! *** Runs in circles ***")
 				panic(panicCause)
 
 			}
