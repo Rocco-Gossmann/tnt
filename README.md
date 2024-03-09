@@ -9,9 +9,11 @@ So this tool is meant to make things easier by documenting when and how long cer
 
 
 ## installation:
-Just put one of the binaries from the Release section into a folder registered in your $PATH (Linux, Mac)  or %PATH% (Windows).
+Just put one of the binaries from the Release section into a folder registered in your `$PATH` (Linux, Mac)  or `%PATH%` (Windows).
 
-if you don't trust the code.
+Then rename the Binary, `tnt`
+
+if you don't trust the code, you can build your own version, if you have at least go 1.21.3 installed.
 
 
 ## usage:
