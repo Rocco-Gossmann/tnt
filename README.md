@@ -71,6 +71,15 @@ tnt times sum
 ```
 and you'll get a list of all tasks and how much time you've spend with them in total.
 
+### Full list of Times
+To find out, when you did what, you can use the 
+```bash
+tnt timers ls
+```
+command. The most current started timer is on top.
+The oldest timer is on the bottom.
+
+
 
 ## Autocompletion:
 This tool was build with auto completion im mind, as task names can become quite long.
