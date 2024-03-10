@@ -16,10 +16,15 @@ import (
 	ex "github.com/rocco-gossmann/go_throwable"
 )
 
+var (
+	Version string
+)
+
 // main
 func main() {
 
 	hadAPanic := false
+	panicExitCode := 1
 
 	//	log.SetOutput(io.Discard)
 	// TO make sure the DB Connection can be closed safely, we need ot use panics
@@ -32,8 +37,10 @@ func main() {
 	ex.Try(func() any {
 
 		myCMD := cobra.Command{
-			Use: "tnt {tasks|start|switch|times}",
+			Use: "tnt {tasks|s|start|switch|stop|times} [-v] [-h]",
+
 			PersistentPreRun: func(cmd *cobra.Command, args []string) {
+
 				if cmd.Flag("debug").Value.String() == "false" {
 					log.SetOutput(io.Discard)
 					log.Println("--debug set => enable logging")
@@ -41,11 +48,24 @@ func main() {
 
 				database.InitDB("")
 			},
+
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if cmd.Flag("version").Value.String() == "true" {
+					fmt.Println(Version)
+					return nil
+				}
+
+				return fmt.Errorf("unknown command")
+			},
+
+			DisableFlagsInUseLine: true,
 		}
 
-		myCMD.AddCommand(&tasks.TaskCMD, &cmds.SwitchCMD, &cmds.StopCmd, &times.TimesCMD)
 		myCMD.PersistentFlags().Bool("debug", false, "Enable Debug-Log output")
+		myCMD.PersistentFlags().BoolP("version", "v", false, "Prints the version number of Tasks n' Times")
 
+		// Add all the Sub-Commands
+		myCMD.AddCommand(&tasks.TaskCMD, &cmds.SwitchCMD, &cmds.StopCmd, &times.TimesCMD)
 		myCMD.Execute()
 
 		return nil
@@ -56,6 +76,7 @@ func main() {
 			if ce, ok := interface{}(panicCause).(utils.ControlledPanic); ok {
 				fmt.Println(ce.Msg)
 				hadAPanic = true
+				panicExitCode = ce.ExitCode
 			} else {
 				fmt.Println("PANIC !!!! *** Runs in circles ***")
 				panic(panicCause)
@@ -66,7 +87,7 @@ func main() {
 		Finally: func() {
 			database.DeInitDB()
 			if hadAPanic {
-				os.Exit(1)
+				os.Exit(panicExitCode)
 			}
 		},
 	})

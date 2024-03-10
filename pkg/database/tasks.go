@@ -49,7 +49,7 @@ func GetTaskIDByName(taskName string) uint {
 	if err != nil {
 		errStr := fmt.Sprintf("%s", err)
 		if strings.HasPrefix(errStr, "sql: no rows") {
-			utils.Exitf("Task '%s' is not in the List. use tnt tasks add \"%s\" to add it.", taskName, taskName)
+			utils.Failf("Task '%s' is not in the List. use tnt tasks add \"%s\" to add it.", taskName, taskName)
 		} else {
 			panic(err)
 		}

@@ -24,7 +24,7 @@ var AddCMD cobra.Command = cobra.Command{
 		if err != nil {
 			errStr := fmt.Sprintf("%s", err)
 			if strings.HasPrefix(errStr, "UNIQUE") {
-				utils.Exitf("task '%s' already added", taskName)
+				utils.Failf("task '%s' already added", taskName)
 			} else {
 				panic(err)
 			}
