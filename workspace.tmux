@@ -1,3 +1,3 @@
 #!/bin/bash
 
-tmux-workspace "TasksNTimes" "editor" -c "nvim && zsh" \ -c "zsh"
+tmux-workspace "TasksNTimes" "editor" -c "nvim && zsh" "make dev"
