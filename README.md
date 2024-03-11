@@ -2,13 +2,29 @@
 A quick CLI tool to keep track of how long certain tasks have taken
 
 
+
+<!-- vim-markdown-toc GFM -->
+
+* [Goal of the Project](#goal-of-the-project)
+* [installation](#installation)
+* [usage](#usage)
+    * [Switching to another task.](#switching-to-another-task)
+    * [Getting a list of Tasks and Times](#getting-a-list-of-tasks-and-times)
+    * [Full list of Times](#full-list-of-times)
+* [Autocompletion:](#autocompletion)
+* [Building from Source](#building-from-source)
+* [Paq (Probabbly asked Questions)](#paq-probabbly-asked-questions)
+
+<!-- vim-markdown-toc -->
+
+
 ## Goal of the Project
 
 I had a lot of "Project-Hopping" to do lately, and can barely keep track of what toke how long.
 So this tool is meant to make things easier by documenting when and how long certain tasks have been executed.
 
 
-## installation:
+## installation
 Just put one of the binaries from the Release section into a folder registered in your `$PATH` (Linux, Mac)  or `%PATH%` (Windows).
 
 Then rename the Binary, `tnt`
@@ -16,7 +32,7 @@ Then rename the Binary, `tnt`
 if you don't trust the binaries further down is a section on how to create your own builds.
 
 
-## usage:
+## usage
 for now this is CLI (Command line interface) only
 
 ```bash
@@ -55,7 +71,7 @@ or, if you want to stop the timers (for example because your shift is over) call
 tnt stop
 ```
 
-## Switching to another task.
+### Switching to another task.
 switching tasks is as easy as calling
 ```bash
 tnt s "what ever is your new task"
@@ -63,7 +79,7 @@ tnt s "what ever is your new task"
 Should another timer be running currently, it will be stopped and a new timer for the new task is started.
 
 
-## Getting a list of Tasks and Times
+### Getting a list of Tasks and Times
 just run.
 
 ```bash
@@ -107,3 +123,7 @@ Enter the Clones Folder
 Run `go mod tidy` to download the missing packages
 and build The Binaries `go build`
 
+
+## Paq (Probabbly asked Questions)
+Where does `tnt` store it's persistent Data?
+> All it's data is stored in the $HOME/.local/share/tnt - Folder

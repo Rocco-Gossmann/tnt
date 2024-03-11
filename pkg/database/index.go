@@ -55,7 +55,7 @@ func InitDB(dbFile string) {
 		configDir, err := os.UserHomeDir()
 		utils.Err(err)
 
-		configPath := configDir + "/.config/tnt"
+		configPath := configDir + "/.local/share/tnt"
 		_, err = os.Stat(configPath)
 		if os.IsNotExist(err) {
 			// create Directory if not exist
