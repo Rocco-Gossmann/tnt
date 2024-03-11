@@ -90,7 +90,7 @@ and you'll get a list of all tasks and how much time you've spend with them in t
 ### Full list of Times
 To find out, when you did what, you can use the 
 ```bash
-tnt timers ls
+tnt times ls
 ```
 command. The most current started timer is on top.
 The oldest timer is on the bottom.
