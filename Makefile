@@ -1,7 +1,8 @@
 # ==============================================================================
 # Vars
 # ==============================================================================
-VERSION:=$(shell date '+%Y%m%d-%H%M%S')
+VERSION:=$(shell git describe --tags --abbrev=0)
+DEVVERSION:=$(shell git describe --tags)
 	
 # ==============================================================================
 # Directorys
@@ -14,7 +15,7 @@ BUILDDIR:= .
 
 
 $(BUILDDIR)/tnt: main.go 
-	go build -ldflags="-s -w -X main.Version=$(VERSION)" -o $@
+	go build -ldflags="-s -w -X main.Version=$(DEVVERSION)" -o $@
 
 setup: go.sum
 	@echo "setup done"

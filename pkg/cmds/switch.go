@@ -2,6 +2,7 @@ package cmds
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/rocco-gossmann/tnt/pkg/database"
 	"github.com/spf13/cobra"
@@ -26,7 +27,7 @@ var SwitchCMD = cobra.Command{
 		database.FinishCurrentlyRunningTimes()
 		id := database.StartNewTime(taskId)
 
-		fmt.Printf("Started new timer with Id: %d\n", id)
-
+		log.Printf("new timer with Id: %d\n", id)
+		fmt.Printf("timer started")
 	},
 }
