@@ -13,7 +13,7 @@ A quick CLI tool to keep track of how long certain tasks have taken
     * [Full list of Times](#full-list-of-times)
 * [Autocompletion:](#autocompletion)
 * [Building from Source](#building-from-source)
-* [Paq (Probabbly asked Questions)](#paq-probabbly-asked-questions)
+* [Probabbly asked Questions](#probabbly-asked-questions)
 
 <!-- vim-markdown-toc -->
 
@@ -124,6 +124,7 @@ Run `go mod tidy` to download the missing packages
 and build The Binaries `go build`
 
 
-## Paq (Probabbly asked Questions)
-Where does `tnt` store it's persistent Data?
-> All it's data is stored in the $HOME/.local/share/tnt - Folder
+## Probabbly asked Questions
+ **Q**: Where does `tnt` store it's persistent Data?
+> All it's data is stored in the `$HOME/.local/share/tnt` - Folder.
+> On Windows that should be `%%USERPROFILE%%\.local\share\tnt`.
