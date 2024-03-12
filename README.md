@@ -7,12 +7,12 @@ A quick CLI tool to keep track of how long certain tasks have taken
 
 * [Goal of the Project](#goal-of-the-project)
 * [installation](#installation)
+        * [Why no prebuild Binaries](#why-no-prebuild-binaries)
 * [usage](#usage)
     * [Switching to another task.](#switching-to-another-task)
     * [Getting a list of Tasks and Times](#getting-a-list-of-tasks-and-times)
     * [Full list of Times](#full-list-of-times)
 * [Autocompletion:](#autocompletion)
-* [Building from Source](#building-from-source)
 * [Probabbly asked Questions](#probabbly-asked-questions)
 
 <!-- vim-markdown-toc -->
@@ -25,11 +25,44 @@ So this tool is meant to make things easier by documenting when and how long cer
 
 
 ## installation
-Just put one of the binaries from the Release section into a folder registered in your `$PATH` (Linux, Mac)  or `%PATH%` (Windows).
 
-Then rename the Binary, `tnt`
+For now building the project yourself is going to be your only option. 
+- Install GO (https://go.dev/doc/install) 
 
-if you don't trust the binaries further down is a section on how to create your own builds.
+- clone this repo
+```bash
+git clone https://github.com/Rocco-Gossmann/tnt.git
+```
+- Enter the directory
+```bash
+cd tnt
+```
+
+- Build the project
+```bash
+CGO_ENABLED=1 go build -ldflags="-s -w -X main.Version=`git describe --tags --abbrev=0`"
+```
+
+- Copy the `tnt` file into one of the folders listed by your environment vars $PATH or %PATH% var
+- or extend $PATH 
+```bash
+echo "export PATH=\"`pwd`:\$PATH\"" >> ~/.bashrc
+
+# or for ZSH
+
+echo "export PATH=\"`pwd`:\$PATH\"" >> ~/.zshrc
+```
+
+
+#### Why no prebuild Binaries
+Due to my lack of experience with cross-compilation.
+Cross compiling Go projects, that don't have depencies is easy, yes.
+However, this project made the mistake of using Sqlite3.
+Sqlite3 requires CGO_ENABLED=1, which in return requires platform specific 
+libs.
+Maybe I'll try to find another way to handle persisten date, but for now,
+this is it.
+
 
 
 ## usage
@@ -116,12 +149,6 @@ Check the following command for more autocompletion options
 tnt completion 
 ```
 
-## Building from Source
-For that, you need to install Go 1.21.3 or later.
-Clone this repo. 
-Enter the Clones Folder
-Run `go mod tidy` to download the missing packages
-and build The Binaries `go build`
 
 
 ## Probabbly asked Questions
