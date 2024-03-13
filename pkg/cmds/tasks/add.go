@@ -17,9 +17,7 @@ var AddCMD cobra.Command = cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		taskName := args[0]
-
-		taskKey := database.GenerateTaskKey(taskName)
-		_, err := database.ExecStatement("INSERT INTO tasks(textkey, name) VALUES (?, ?)", taskKey, taskName)
+		err := database.AddTask(args[0]);
 
 		if err != nil {
 			errStr := fmt.Sprintf("%s", err)

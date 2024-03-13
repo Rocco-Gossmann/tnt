@@ -62,6 +62,17 @@ func GetTaskIDByName(taskName string) uint {
 	return taskId
 }
 
+func AddTask(taskName string) error {
+	taskKey := GenerateTaskKey(taskName)
+	_, err := ExecStatement("INSERT INTO tasks(textkey, name) VALUES (?, ?)", taskKey, taskName)
+
+	if err != nil {
+		return err
+	}
+
+	return nil;
+}
+
 // converts the given Task into a normaized version, to help avoid putting in mutlipe tasks
 func GenerateTaskKey(taskName string) string {
 	return strings.ToLower(strings.TrimSpace(taskName))

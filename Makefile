@@ -24,11 +24,18 @@ go.sum: go.mod
 	GOPRIVATE="github.com/rocco-gossmann" go mod tidy
 
 
-.phony: clean remake dev all 
+.phony: clean remake dev all test tst
 
 
 dev:
 	find . -type f -name "*.go" | entr make remake
+
+test:
+	find . -type f -name "*.go" | entr make tst 
+
+tst:
+	clear
+	go test
 
 remake: 
 	make clean

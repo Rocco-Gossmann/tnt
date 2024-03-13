@@ -1,6 +1,8 @@
 package database
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -21,6 +23,17 @@ func initTimesTable() {
 	utils.Err(err)
 }
 
+type TimeDS struct {
+	task     string
+	start    string
+	end      string
+	duration string
+}
+
+func (ts TimeDS) String() string {
+	return fmt.Sprintf(" %s | %s | %s | %s ", ts.task, ts.start, ts.end, ts.duration)
+}
+
 func getSQLTimeNow() string {
 	tm := time.Now()
 	return tm.Format(utils.SQL_DATETIME_FORMAT)
@@ -37,6 +50,7 @@ func TimedTaskIsRunning(taskId uint) bool {
 	return c > 0
 }
 
+// @panic error - on DB issue
 func FinishCurrentlyRunningTimes() {
 	endTS := getSQLTimeNow()
 	result, err := ExecStatement("UPDATE times SET end=? WHERE END IS NULL", endTS)
@@ -50,6 +64,7 @@ func FinishCurrentlyRunningTimes() {
 	log.Printf("Ended %d running `time` entr%s", rowCnt, suffix)
 }
 
+// @panic error - on db fail
 func StartNewTime(taskId uint) int {
 	startTS := getSQLTimeNow()
 
@@ -61,4 +76,45 @@ func StartNewTime(taskId uint) int {
 
 	return int(insertId)
 
+}
+
+func GetTimes() ([]TimeDS, error) {
+	var ret []TimeDS
+	res, err := QueryStatement(`
+			SELECT 
+				ta.name, 
+				ti.start, 
+				ti.end, 
+				time(unixepoch(ti.end) - unixepoch(ti.start), "unixepoch") duration
+			FROM times ti
+			LEFT JOIN tasks ta ON ti.taskId = ta.id
+			ORDER BY start DESC;
+		`)
+
+	if err != nil {
+		return ret, err
+	}
+
+	for res.Next() {
+		var name, total, start, end sql.NullString
+		err = res.Scan(&name, &start, &end, &total)
+		utils.Err(err)
+
+		if !end.Valid {
+			end.String = "* running *"
+		}
+
+		if total.Valid {
+			total.String += " Hours"
+		}
+
+		ret = append(ret, TimeDS{
+			task:     name.String,
+			start:    start.String,
+			end:      end.String,
+			duration: total.String,
+		})
+	}
+
+	return ret, err
 }
