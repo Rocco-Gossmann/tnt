@@ -15,7 +15,7 @@ var LSCMD = cobra.Command{
 	Long:  "Shows a list of all registerd times, with the latest registerd time being shown first",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		times, err := database.GetTimes()
+		times, err := database.GetTimes(getTaskIdFromFlags(cmd))
 		utils.Err(err)
 
 		sTimes := make([]string, len(times))

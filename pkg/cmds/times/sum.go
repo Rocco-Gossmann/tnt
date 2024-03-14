@@ -19,7 +19,8 @@ var SumCMD = cobra.Command{
 				time(sum(unixepoch(ti.end) - unixepoch(ti.start)), "unixepoch") total
 			FROM times ti 
 				LEFT JOIN tasks ta ON ti.taskId = ta.id
-			WHERE end IS NOT NULL GROUP by taskId
+			WHERE end IS NOT NULL` + getTaskWhere(cmd, " AND") + ` GROUP by taskId
+
 		`)
 
 		utils.Err(err)

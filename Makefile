@@ -2,6 +2,7 @@
 # Vars
 # ==============================================================================
 DEVVERSION:=$(shell git describe --tags)
+VERSION:=$(shell git describe --tags --abbr=0)
 
 BUILDCMD:=CGO_ENABLED=1 go build
 
@@ -51,6 +52,7 @@ tst:
 
 remake: 
 	make clean
+	clear
 	make tnt
 	
 clean:

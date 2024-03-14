@@ -78,8 +78,14 @@ func StartNewTime(taskId uint) int {
 
 }
 
-func GetTimes() ([]TimeDS, error) {
+func GetTimes(taskId uint) ([]TimeDS, error) {
 	var ret []TimeDS
+	var taskWhere = ""
+
+	if taskId > 0 {
+		taskWhere = fmt.Sprintf(" WHERE taskId=%d ", taskId)
+	}
+
 	res, err := QueryStatement(`
 			SELECT 
 				ta.name, 
@@ -88,6 +94,7 @@ func GetTimes() ([]TimeDS, error) {
 				time(unixepoch(ti.end) - unixepoch(ti.start), "unixepoch") duration
 			FROM times ti
 			LEFT JOIN tasks ta ON ti.taskId = ta.id
+			` + taskWhere + `
 			ORDER BY start DESC;
 		`)
 
