@@ -98,7 +98,7 @@ command. The most current started timer is on top.
 The oldest timer is on the bottom.
 
 ### Filtering the times 
-both of the `tnt times` command can take a `-t` or `--task` flag, to filter the results for a given task.
+both of the `tnt times` commands can take a `-t` or `--task` flag, to filter the results for a given task.
 The value for this flag is the Taskname give during `tnt task add` or used during `tnt s | start | switch`.
 
 
