@@ -17,9 +17,6 @@ BUILDDIR:= .
 $(BUILDDIR)/tnt: main.go
 	$(BUILDCMD) -ldflags="-X main.Version=$(DEVVERSION)" -o $@
 
-tnt.mac.arm64: main.go
-	GOOS=darwin GOARCH=arm64 $(BUILDCMD) -ldflags="-w -X main.Version=$(VERSION)" -o $@
-
 tnt.win.x86_64.exe: main.go
 	GOOS=windows GOARCH=amd64 CC="zig cc -target x86_64-windows" CXX="zig c++ -target x86_64-windows" $(BUILDCMD) -ldflags="-w -X main.Version=$(VERSION)" -o $@
 
@@ -36,7 +33,7 @@ go.sum: go.mod
 
 .phony: clean remake dev all test tst all
 
-all: tnt.mac.arm64 tnt.win.x86_64.exe tnt.linux.x86_64
+all: tnt.win.x86_64.exe tnt.linux.x86_64
 	echo "done"
 
 
@@ -58,6 +55,5 @@ remake:
 	
 clean:
 	rm -rf $(BUILDDIR)/tnt	
-	rm -rf $(BUILDDIR)/tnt.mac.arm64
 	rm -rf $(BUILDDIR)/tnt.win.x86_64.exe
 	rm -rf $(BUILDDIR)/tnt.linux.x86_64
