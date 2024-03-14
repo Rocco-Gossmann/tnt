@@ -1,19 +1,18 @@
 # Tasks n' Times
-A quick CLI tool to keep track of how long certain tasks have taken
-
-
+A CLI tool to keep track of how long certain tasks have taken
 
 <!-- vim-markdown-toc GFM -->
 
 * [Goal of the Project](#goal-of-the-project)
 * [installation](#installation)
-        * [Why no prebuild Binaries](#why-no-prebuild-binaries)
 * [usage](#usage)
     * [Switching to another task.](#switching-to-another-task)
-    * [Getting a list of Tasks and Times](#getting-a-list-of-tasks-and-times)
-    * [Full list of Times](#full-list-of-times)
+    * [Getting a list of Tasks and how much time was spend in them](#getting-a-list-of-tasks-and-how-much-time-was-spend-in-them)
+    * [Getting a full list of Times](#getting-a-full-list-of-times)
+    * [Filtering the times](#filtering-the-times)
 * [Autocompletion:](#autocompletion)
 * [Probabbly asked Questions](#probabbly-asked-questions)
+* [Build it yourself](#build-it-yourself)
 
 <!-- vim-markdown-toc -->
 
@@ -21,52 +20,22 @@ A quick CLI tool to keep track of how long certain tasks have taken
 ## Goal of the Project
 
 I had a lot of "Project-Hopping" to do lately, and can barely keep track of what toke how long.
-So this tool is meant to make things easier by documenting when and how long certain tasks have been executed.
-
+This tool is meant to make things easier by documenting when and how long certain tasks have been executed.
 
 ## installation
+- grab one of the Binaries from the [Releases - Section](https://github.com/Rocco-Gossmann/tnt/releases/latest)
+- rename it to `tnt` (for Linux/Unix) or `tnt.exe` (for Windows)
+- put it into a directory that is listed in your $PATH or %PATH%
+- setup the Autocompletion as described further down in [Autocompletion](#autocompletion)
+Done
 
-For now building the project yourself is going to be your only option. 
-- Install GO (https://go.dev/doc/install) 
-
-- clone this repo
-```bash
-git clone https://github.com/Rocco-Gossmann/tnt.git
-```
-- Enter the directory
-```bash
-cd tnt
-```
-
-- Build the project
-```bash
-CGO_ENABLED=1 go build -ldflags="-s -w -X main.Version=`git describe --tags --abbrev=0`"
-```
-
-- Copy the `tnt` file into one of the folders listed by your environment vars $PATH or %PATH% var
-- or extend $PATH 
-```bash
-echo "export PATH=\"`pwd`:\$PATH\"" >> ~/.bashrc
-
-# or for ZSH
-
-echo "export PATH=\"`pwd`:\$PATH\"" >> ~/.zshrc
-```
-
-
-#### Why no prebuild Binaries
-Due to my lack of experience with cross-compilation.
-Cross compiling Go projects, that don't have depencies is easy, yes.
-However, this project made the mistake of using Sqlite3.
-Sqlite3 requires CGO_ENABLED=1, which in return requires platform specific 
-libs.
-Maybe I'll try to find another way to handle persisten date, but for now,
-this is it.
-
+Should your system not be covered by the precompiled binaries, please use the
+build guide further down [Build it yourself](#build-it-yourself)
 
 
 ## usage
-for now this is CLI (Command line interface) only
+For now this is CLI (Command line interface) tool only
+Easily usable via Windows Powershell/CMD or Unix Bash, ZSH, etc. 
 
 ```bash
 # first create some tasks 
@@ -112,7 +81,7 @@ tnt s "what ever is your new task"
 Should another timer be running currently, it will be stopped and a new timer for the new task is started.
 
 
-### Getting a list of Tasks and Times
+### Getting a list of Tasks and how much time was spend in them
 just run.
 
 ```bash
@@ -120,7 +89,7 @@ tnt times sum
 ```
 and you'll get a list of all tasks and how much time you've spend with them in total.
 
-### Full list of Times
+### Getting a full list of Times
 To find out, when you did what, you can use the 
 ```bash
 tnt times ls
@@ -128,6 +97,9 @@ tnt times ls
 command. The most current started timer is on top.
 The oldest timer is on the bottom.
 
+### Filtering the times 
+both of the `tnt times` command can take a `-t` or `--task` flag, to filter the results for a given task.
+The value for this flag is the Taskname give during `tnt task add` or used during `tnt s | start | switch`.
 
 
 ## Autocompletion:
@@ -150,8 +122,37 @@ tnt completion
 ```
 
 
-
 ## Probabbly asked Questions
  **Q**: Where does `tnt` store it's persistent Data?
-> All it's data is stored in the `$HOME/.local/share/tnt` - Folder.
-> On Windows that should be `%%USERPROFILE%%\.local\share\tnt`.
+> All it's data is stored in the `$HOME/.local/share/tnt` directory.
+> On Windows that should be `%USERPROFILE%\.local\share\tnt`.
+
+
+## Build it yourself
+
+- Install GO (https://go.dev/doc/install) 
+- clone this repo
+```bash
+git clone https://github.com/Rocco-Gossmann/tnt.git
+```
+- Enter the directory
+```bash
+cd tnt
+```
+
+- Build the project
+```bash
+CGO_ENABLED=1 go build -ldflags="-s -w -X main.Version=`git describe --tags --abbrev=0`"
+```
+
+- Copy the `tnt` file into one of the folders listed by your environment vars $PATH or %PATH% var
+- or extend $PATH 
+```bash
+echo "export PATH=\"`pwd`:\$PATH\"" >> ~/.bashrc
+
+# or for ZSH
+
+echo "export PATH=\"`pwd`:\$PATH\"" >> ~/.zshrc
+```
+
+
