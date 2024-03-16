@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"strings"
@@ -38,14 +39,26 @@ func GetTaskList() ([]string, error) {
 	return ret, nil
 }
 
-func GetTaskIDByName(taskName string) uint {
+func internal_GenerateTaskKey(taskName string) (string, uint, error) {
 	taskKey := GenerateTaskKey(taskName)
-	var taskId uint
+	var taskId sql.NullInt64
 
 	taskRow, err := RowQueryStatement("SELECT id FROM tasks WHERE textkey = ?", taskKey)
 	utils.Err(err)
-
 	err = taskRow.Scan(&taskId)
+
+	if !taskId.Valid {
+		taskId.Int64 = 0
+		return taskKey, uint(taskId.Int64), nil
+	}
+
+	return taskKey, uint(taskId.Int64), err
+}
+
+func GetTaskIDByName(taskName string) uint {
+
+	_, taskId, err := internal_GenerateTaskKey(taskName)
+
 	if err != nil {
 		errStr := fmt.Sprintf("%s", err)
 		if strings.HasPrefix(errStr, "sql: no rows") {
@@ -70,7 +83,18 @@ func AddTask(taskName string) error {
 		return err
 	}
 
-	return nil;
+	return nil
+}
+
+func RenameTask(taskId uint, newName string) (sql.Result, error) {
+	taskKey, newTaskId, err := internal_GenerateTaskKey(newName)
+	utils.Err(err)
+
+	if newTaskId != 0 {
+		utils.Failf("Task '%s' already exists. Please choose another new name.", newName)
+	}
+
+	return ExecStatement("UPDATE tasks SET textkey = ?, name = ? WHERE id = ?", taskKey, newName, taskId)
 }
 
 // converts the given Task into a normaized version, to help avoid putting in mutlipe tasks

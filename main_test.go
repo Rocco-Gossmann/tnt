@@ -96,7 +96,7 @@ func TestEverything(test *testing.T) {
 
 	test.Run("make sure times are empty to start", func(test *testing.T) {
 
-		times, err := database.GetTimes()
+		times, err := database.GetTimes(0)
 		handleunexpectedError(err, "while listing Times")
 
 		if len(times) > 0 {

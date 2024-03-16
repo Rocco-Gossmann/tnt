@@ -11,7 +11,5 @@ var TaskCMD cobra.Command = cobra.Command{
 }
 
 func init() {
-	TaskCMD.AddCommand(&AddCMD)
-	TaskCMD.AddCommand(&LSCMD)
-	TaskCMD.AddCommand(&RMCMD)
+	TaskCMD.AddCommand(&AddCMD, &LSCMD, &RMCMD, &MVCMD)
 }

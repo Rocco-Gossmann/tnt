@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rocco-gossmann/tnt/pkg/utils"
@@ -86,4 +87,9 @@ func DeInitDB() {
 		log.Println("DB DeInit")
 	}
 
+}
+
+// Check if an error has todo with a unique key already existing
+func IsUniqueContraintError(err error) bool {
+	return strings.HasPrefix(err.Error(), "UNIQUE constraint failed")
 }
