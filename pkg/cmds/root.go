@@ -5,15 +5,15 @@ import (
 	"io"
 	"log"
 
-	"github.com/rocco-gossmann/tnt/pkg/database"
-	"github.com/rocco-gossmann/tnt/pkg/env"
 	"github.com/rocco-gossmann/tnt/pkg/cmds/tasks"
 	"github.com/rocco-gossmann/tnt/pkg/cmds/times"
+	"github.com/rocco-gossmann/tnt/pkg/database"
+	"github.com/rocco-gossmann/tnt/pkg/env"
 	"github.com/spf13/cobra"
 )
 
 var MyCMD = cobra.Command{
-	Use: "tnt {tasks|s|start|switch|stop|times} [-v] [-h]",
+	Use: "tnt {tasks|s|start|switch|stop|times}",
 
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 
@@ -22,7 +22,7 @@ var MyCMD = cobra.Command{
 			log.Println("--debug set => enable logging")
 		}
 
-		database.InitDB("")
+		database.InitDB(cmd.Flag("db").Value.String())
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -39,6 +39,7 @@ var MyCMD = cobra.Command{
 
 func init() {
 	MyCMD.PersistentFlags().Bool("debug", false, "Enable Debug-Log output")
+	MyCMD.PersistentFlags().String("db", "", "Load a custom database file")
 	MyCMD.PersistentFlags().BoolP("version", "v", false, "Prints the version number of Tasks n' Times")
 
 	// Add all the Sub-Commands
