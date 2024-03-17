@@ -1,0 +1,46 @@
+{{ block "index" . }}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script type="text/javascript" src="./htmx.js" ></script>
+    </head>
+
+    <button hx-get="/tasks" hx-target="#task-list" hx-trigger="load, click">Reload Tasks</button>
+
+
+    <form hx-post="/task" hx-target="#task-list" hx-swap="beforeend">
+        <input type="text" name="taskname" />
+        <button type="submit"> + add to list</button>
+    </form>
+
+
+
+    <div id="task-list">
+        Loading tasks ...
+
+    </div>
+
+    <div id="timeslist">
+
+    </div>
+
+</html>
+{{ end }}
+
+
+
+
+
+{{ block "task_list" . }}
+    <div id="task-entry-{{ .Id }}" style="all: unset; display: block">
+        <button 
+
+            hx-delete="/task/{{ .Id }}"
+            hx-confirm="Do you want to delete this task and all its times?"
+            hx-target="#task-entry-{{ .Id }}"
+            hx-swap="delete"
+
+        >&times;</button>
+        <a href="#">{{ .Name }}</a>
+    </div>
+{{ end }}

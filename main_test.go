@@ -89,7 +89,7 @@ func TestEverything(test *testing.T) {
 			test.Fatal("Tasklist returned nothing. Should have returned at least on entry")
 		}
 
-		if TEST_TASK_1 != tasks[0] {
+		if TEST_TASK_1 != tasks[0].Name {
 			test.Fatal("returned enty is messed up\nShould be: ", TEST_TASK_1, "\nIs: ", tasks[0])
 		}
 	})

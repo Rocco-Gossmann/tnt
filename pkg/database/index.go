@@ -91,5 +91,8 @@ func DeInitDB() {
 
 // Check if an error has todo with a unique key already existing
 func IsUniqueContraintError(err error) bool {
+	if err == nil {
+		return false 
+	}
 	return strings.HasPrefix(err.Error(), "UNIQUE constraint failed")
 }

@@ -24,14 +24,14 @@ func initTimesTable() {
 }
 
 type TimeDS struct {
-	task     string
-	start    string
-	end      string
-	duration string
+	Task     string
+	Start    string
+	End      string
+	Duration string
 }
 
 func (ts TimeDS) String() string {
-	return fmt.Sprintf(" %s | %s | %s | %s ", ts.task, ts.start, ts.end, ts.duration)
+	return fmt.Sprintf(" %s | %s | %s | %s ", ts.Task, ts.Start, ts.End, ts.Duration)
 }
 
 func getSQLTimeNow() string {
@@ -116,10 +116,10 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 		}
 
 		ret = append(ret, TimeDS{
-			task:     name.String,
-			start:    start.String,
-			end:      end.String,
-			duration: total.String,
+			Task:     name.String,
+			Start:    start.String,
+			End:      end.String,
+			Duration: total.String,
 		})
 	}
 

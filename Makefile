@@ -32,7 +32,7 @@ go.sum: go.mod
 	GOPRIVATE="github.com/rocco-gossmann" go mod tidy
 
 
-.phony: clean remake dev all test tst all
+.phony: clean remake dev all test tst all serve server
 
 all: tnt.win.x86_64.exe tnt.linux.x86_64
 	echo "done"
@@ -43,12 +43,24 @@ all: tnt.win.x86_64.exe tnt.linux.x86_64
 dev:
 	find . -type f -name "*.go" | entr make remake
 
+serve:
+	find . -type f -name "*.go" | entr make server
+
 test:
 	find . -type f -name "*.go" | entr make tst 
 
 tst:
 	clear
 	go test
+
+server:
+	$(shell killall -q tnt)
+	clear
+	rm -f ./tnt
+	make tnt
+	./tnt serve --debug &
+	
+
 
 remake: 
 	make clean

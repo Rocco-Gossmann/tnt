@@ -18,7 +18,7 @@ var LSCMD = cobra.Command{
 		utils.Err(err)
 
 		for _, task := range tasks {
-			fmt.Println(task)
+			fmt.Println(task.Name)
 		}
 	},
 }

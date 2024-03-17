@@ -13,7 +13,7 @@ import (
 )
 
 var MyCMD = cobra.Command{
-	Use: "tnt {tasks|s|start|switch|stop|times}",
+	Use: "tnt {tasks|s|start|switch|stop|times|serve}",
 
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 
@@ -43,7 +43,7 @@ func init() {
 	MyCMD.PersistentFlags().BoolP("version", "v", false, "Prints the version number of Tasks n' Times")
 
 	// Add all the Sub-Commands
-	MyCMD.AddCommand(&tasks.TaskCMD, &SwitchCMD, &StopCmd, &times.TimesCMD)
+	MyCMD.AddCommand(&tasks.TaskCMD, &SwitchCMD, &StopCmd, &times.TimesCMD, &ServeCMD)
 }
 
 func LetsGo() {
