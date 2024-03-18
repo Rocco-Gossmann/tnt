@@ -14,15 +14,21 @@
     </form>
 
 
+    <section id="tasks-section">
+        <h1>Tasks:</h1>
+        <div id="task-list">
+            Loading tasks ...
 
-    <div id="task-list">
-        Loading tasks ...
+        </div>
+    </section>
 
-    </div>
+    <section id="times-section">
+        <h1>Times:</h1>
+        <button hx-get="/times" hx-target="#times-list">all</button>
+        <div id="times-list">
 
-    <div id="timeslist">
-
-    </div>
+        </div>
+    </section>
 
 </html>
 {{ end }}
@@ -33,6 +39,10 @@
 
 {{ block "task_list" . }}
     <div id="task-entry-{{ .Id }}" style="all: unset; display: block">
+        <a href="#" 
+            hx-get="/times/{{ .Id }}"
+            hx-target="#times-list"
+        >{{ .Name }}</a>
         <button 
 
             hx-delete="/task/{{ .Id }}"
@@ -41,6 +51,17 @@
             hx-swap="delete"
 
         >&times;</button>
-        <a href="#">{{ .Name }}</a>
+    </div>
+{{ end }}
+
+{{ block "times_list" . }}
+    <div id="times-entry-{{ .Id }}" style="all: unset; display: block">
+
+        <button 
+            hx-delete="/times/{{ .Id }}"
+            hx-confirm="Do you want to delete this time?"
+            hx-target="#times-entry-{{ .Id }}"
+            hx-swap="delete"
+        >&times;</button>
     </div>
 {{ end }}

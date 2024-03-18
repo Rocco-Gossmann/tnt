@@ -23,6 +23,15 @@ func initTimesTable() {
 	utils.Err(err)
 }
 
+type Time struct {
+	Id uint
+	Start string	
+	End string
+	Duration string
+	TaskId uint
+	TaskName string
+}
+
 type TimeDS struct {
 	Task     string
 	Start    string
@@ -76,6 +85,80 @@ func StartNewTime(taskId uint) int {
 
 	return int(insertId)
 
+}
+
+func GetTimesRaw(taskId uint) ([]Time, error) {
+
+	var ret []Time
+
+	var taskWhere = ""
+
+	if taskId > 0 {
+		taskWhere = fmt.Sprintf(" WHERE taskId=%d ", taskId)
+	}
+
+	res, err := QueryStatement(`
+			SELECT 
+				ti.id, 
+				ti.start, 
+				ti.end, 
+				time(unixepoch(ti.end) - unixepoch(ti.start), "unixepoch") duration,
+				ti.taskId,
+				ta.name
+			FROM times ti
+			LEFT JOIN tasks ta ON ti.taskId = ta.id
+			` + taskWhere + `
+			ORDER BY start DESC;
+		`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	
+	var (
+		id, tid uint
+		s, e, d, n sql.NullString
+	)
+
+	for res.Next() {
+
+		err := res.Scan(&id, &s, &e, &d, &tid, &n)
+
+		log.Println(id, s, e, d, tid, n);
+
+
+		if !s.Valid {
+			s.String = ""
+		}
+
+		if !e.Valid {
+			e.String = "** running **"
+		}
+
+		if !d.Valid {
+			d.String = ""
+		}
+
+		if !n.Valid {
+			n.String = " unknown "
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		ret = append(ret, Time{
+			Id: id,
+			Start: s.String,
+			End: e.String,
+			Duration: d.String,
+			TaskId: tid,
+			TaskName: n.String,
+		})		
+	}
+
+	return ret, nil
 }
 
 func GetTimes(taskId uint) ([]TimeDS, error) {

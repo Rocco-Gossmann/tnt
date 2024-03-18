@@ -27,6 +27,8 @@ var ServeCMD cobra.Command = cobra.Command{
 		mux.HandleFunc("POST /task", serve.PostTask)
 		mux.HandleFunc("GET /tasks", serve.GetTasks)
 		mux.HandleFunc("DELETE /task/{id}", serve.DeleteTask)
+
+		mux.HandleFunc("GET /times/{taskid}", serve.GetTimes)
 		mux.HandleFunc("GET /times", serve.GetTimes)
 
 		server := http.Server{
