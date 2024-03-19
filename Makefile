@@ -44,7 +44,7 @@ dev:
 	find . -type f -name "*.go" | entr make remake
 
 serve:
-	find . -type f -name "*.go" -o -name "*.html" | entr make server
+	find . -type f -name "*.go" | entr make server
 
 test:
 	find . -type f -name "*.go" | entr make tst 

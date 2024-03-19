@@ -10,6 +10,9 @@ import (
 
 func GetTimes(w http.ResponseWriter, r *http.Request) {
 
+	runInit()
+	defer runDeInit()
+
 	var iTaskID uint = 0
 
 	log.SetPrefix("GET /times => ")
@@ -37,7 +40,7 @@ func GetTimes(w http.ResponseWriter, r *http.Request) {
 		serveStatusMsg(&w, http.StatusNoContent, "no tasks")
 	} else {
 		for _, time := range times {
-			log.Println("Render:", time);
+			log.Println("Render:", time)
 			tmpl.ExecuteTemplate(w, "times_list", time)
 		}
 	}

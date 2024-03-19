@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/rocco-gossmann/tnt/pkg/database"
 	"github.com/rocco-gossmann/tnt/pkg/serve"
 
 	"github.com/spf13/cobra"
@@ -17,12 +18,15 @@ var ServeCMD cobra.Command = cobra.Command{
 	Use: "serve [-p|--port]",
 	Run: func(cmd *cobra.Command, args []string) {
 
+		database.DeInitDB()
+
 		log.SetPrefix("tnt-server")
 
 		mux := http.NewServeMux()
 
 		mux.HandleFunc("GET /", serve.GetIndex)
 		mux.HandleFunc("GET /htmx.js", FileServer("views/htmx.js"))
+		mux.HandleFunc("GET /main.css", FileServer("views/main.css"))
 
 		mux.HandleFunc("POST /task", serve.PostTask)
 		mux.HandleFunc("GET /tasks", serve.GetTasks)
@@ -32,10 +36,9 @@ var ServeCMD cobra.Command = cobra.Command{
 		mux.HandleFunc("GET /times", serve.GetTimes)
 
 		server := http.Server{
-			Addr: "0.0.0.0:7353",
+			Addr:    "0.0.0.0:7353",
 			Handler: mux,
 		}
-
 
 		server.ListenAndServe()
 

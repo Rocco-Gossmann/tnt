@@ -11,6 +11,7 @@ import (
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 
 	runInit()
+	defer runDeInit()
 
 	log.SetPrefix("GET /tasks => ")
 	log.Println("called GET /tasks ")
@@ -29,6 +30,9 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 
 func PostTask(w http.ResponseWriter, r *http.Request) {
 
+	runInit()
+	defer runDeInit()
+
 	log.SetPrefix("POST /task => ")
 	log.Println("called POST /task ", r)
 
@@ -43,18 +47,18 @@ func PostTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	taskName := r.PostForm.Get("taskname")
-	err = database.AddTask(taskName);
+	err = database.AddTask(taskName)
 
 	if database.IsUniqueContraintError(err) {
 		serveStatusMsg(&w, http.StatusConflict, "task already exists")
 		return
 
-	} else if( serveErr(&w, err) ) {
+	} else if serveErr(&w, err) {
 		return
 
 	}
 
-	t, err := database.GetTaskByName(taskName);
+	t, err := database.GetTaskByName(taskName)
 	if !serveErr(&w, err) {
 		if t == nil {
 			serveStatusMsg(&w, http.StatusNoContent, "element was not created for some reason")
@@ -66,6 +70,9 @@ func PostTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
+	runInit()
+	defer runDeInit()
+
 	log.SetPrefix("DELETE /tasks => ")
 	noCacheHeaders(&w)
 

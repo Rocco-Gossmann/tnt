@@ -22,7 +22,7 @@ func main() {
 	hadAPanic := false
 	panicExitCode := 1
 
-	env.Version = Version + "";
+	env.Version = Version + ""
 
 	// To make sure the DB Connection can be closed safely, we need ot use panics
 	// (os.Exit is bad)

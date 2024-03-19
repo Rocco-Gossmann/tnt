@@ -22,6 +22,7 @@ var MyCMD = cobra.Command{
 			log.Println("--debug set => enable logging")
 		}
 
+		database.SetDBFileName(cmd.Flag("db").Value.String())
 		database.InitDB(cmd.Flag("db").Value.String())
 	},
 

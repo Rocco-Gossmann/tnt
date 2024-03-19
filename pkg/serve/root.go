@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"text/template"
+
+	"github.com/rocco-gossmann/tnt/pkg/database"
 )
 
 var tmpl *template.Template
@@ -16,21 +18,21 @@ var context IndexContext = IndexContext{
 	Cnt: 0,
 }
 
-func serveErr(res *http.ResponseWriter, err error)  bool {
+func serveErr(res *http.ResponseWriter, err error) bool {
 
 	if err != nil {
-		log.Println("Encountered error: ", err);
-		(*res).WriteHeader(http.StatusInternalServerError);
+		log.Println("Encountered error: ", err)
+		(*res).WriteHeader(http.StatusInternalServerError)
 		(*res).Write([]byte(err.Error()))
-		return true;
+		return true
 	}
 
 	return false
 }
 
 func serveStatusMsg(w *http.ResponseWriter, status int, msg string) {
-	(*w).WriteHeader(status);	
-	(*w).Write([]byte(msg));
+	(*w).WriteHeader(status)
+	(*w).Write([]byte(msg))
 	return
 }
 
@@ -40,18 +42,28 @@ func noCacheHeaders(res *http.ResponseWriter) {
 	(*res).Header().Set("expires", "Thu, 01 Jan 1970 00:00:00 GMT")
 }
 
-func makeResponseJSON(res *http.ResponseWriter){
+func makeResponseJSON(res *http.ResponseWriter) {
 	(*res).Header().Set("content-type", "application/json")
 }
 
 func runInit() {
 	if tmpl == nil {
-		t, err := template.ParseFiles("views/index.html");
+		t, err := template.ParseFiles("views/index.html")
 
 		if err != nil {
-			log.Fatal("failed to parse files", err);
+			log.Fatal("failed to parse files", err)
 		}
 
 		tmpl = t
 	}
+
+	database.InitDB("")
+}
+
+func runDeInit() {
+	if tmpl != nil {
+		tmpl = nil
+	}
+
+	database.DeInitDB()
 }

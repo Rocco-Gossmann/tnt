@@ -3,10 +3,14 @@
 <html lang="en">
     <head>
         <script type="text/javascript" src="./htmx.js" ></script>
+        <link rel="stylesheet" href="./main.css" >
     </head>
 
-    <button hx-get="/tasks" hx-target="#task-list" hx-trigger="load, click">Reload Tasks</button>
-
+    <button 
+        hx-get="/tasks" 
+        hx-target="#task-list" 
+        hx-trigger="load, click"
+    >Reload Tasks</button>
 
     <form hx-post="/task" hx-target="#task-list" hx-swap="beforeend">
         <input type="text" name="taskname" />
@@ -22,7 +26,7 @@
         </div>
     </section>
 
-    <section id="times-section">
+    <section id="times-section" class="mt-4">
         <h1>Times:</h1>
         <button hx-get="/times" hx-target="#times-list">all</button>
         <div id="times-list">
@@ -35,16 +39,18 @@
 
 
 
-
-
 {{ block "task_list" . }}
-    <div id="task-entry-{{ .Id }}" style="all: unset; display: block">
+<div id="task-entry-{{ .Id }}" class="
+    border-b border-b-gray-300 
+    px-2 py-1 
+    grid grid-cols-[1fr_0fr] items-end 
+    group hover:bg-gray-300">
         <a href="#" 
             hx-get="/times/{{ .Id }}"
             hx-target="#times-list"
         >{{ .Name }}</a>
         <button 
-
+            class="group-hover:bg-white"
             hx-delete="/task/{{ .Id }}"
             hx-confirm="Do you want to delete this task and all its times?"
             hx-target="#task-entry-{{ .Id }}"
@@ -54,10 +60,21 @@
     </div>
 {{ end }}
 
+
+
 {{ block "times_list" . }}
-    <div id="times-entry-{{ .Id }}" style="all: unset; display: block">
+    <div id="times-entry-{{ .Id }}" class="
+        grid grid-cols-[repeat(4,_1fr)_0fr] 
+        px-2 py-1
+        group hover:bg-gray-300
+    ">
+        <span class="time-taskname">{{ .TaskName }}</span>
+        <span class="time-starttime m-auto">{{ .Start }}</span>
+        <span class="time-endtime m-auto">{{ .End }}</span>
+        <span class="time-duration m-auto">{{ .Duration }}</span>
 
         <button 
+            class="aspect-square group-hover:bg-white"
             hx-delete="/times/{{ .Id }}"
             hx-confirm="Do you want to delete this time?"
             hx-target="#times-entry-{{ .Id }}"

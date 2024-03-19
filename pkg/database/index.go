@@ -12,6 +12,8 @@ import (
 
 const DEFAULT_DBFILE string = "tnt.db"
 
+var dbFileName string = DEFAULT_DBFILE
+
 var db *sql.DB
 
 // Runs a prepared statement on the database. Requires the DB to be initilaized first
@@ -47,9 +49,23 @@ func RowQueryStatement(statement string, args ...any) (*sql.Row, error) {
 	return stmt.QueryRow(args...), nil
 }
 
+// Sets a new Default db file path
+func SetDBFileName(fileName string) {
+	dbFileName = fileName
+}
+
 // Opens or creates the database
 func InitDB(dbFile string) {
 	var err error
+
+	if db != nil {
+		log.Println("DB Open")
+		return
+	}
+
+	if len(dbFile) == 0 {
+		dbFile = dbFileName
+	}
 
 	if len(dbFile) == 0 {
 
@@ -84,6 +100,7 @@ func InitDB(dbFile string) {
 func DeInitDB() {
 	if db != nil {
 		db.Close()
+		db = nil
 		log.Println("DB DeInit")
 	}
 
@@ -92,7 +109,7 @@ func DeInitDB() {
 // Check if an error has todo with a unique key already existing
 func IsUniqueContraintError(err error) bool {
 	if err == nil {
-		return false 
+		return false
 	}
 	return strings.HasPrefix(err.Error(), "UNIQUE constraint failed")
 }
