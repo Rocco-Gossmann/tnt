@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/rocco-gossmann/tnt/pkg/database"
+	"github.com/rocco-gossmann/tnt/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -19,6 +20,11 @@ var SwitchCMD = cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		taskId := database.GetTaskIDByName(args[0])
+
+		if taskId == 0 {
+			utils.Failf("task '%s' not found", args[0])
+		}
+
 		if database.TimedTaskIsRunning(taskId) {
 			fmt.Println("** task already running **")
 			return
