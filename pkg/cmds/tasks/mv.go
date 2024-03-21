@@ -3,6 +3,7 @@ package tasks
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/rocco-gossmann/tnt/pkg/database"
 	"github.com/rocco-gossmann/tnt/pkg/utils"
@@ -19,7 +20,7 @@ var MVCMD cobra.Command = cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 
-		var targetName, newName string = args[0], args[1]
+		var targetName, newName string = strings.TrimSpace(args[0]), strings.TrimSpace(args[1])
 		taskId := database.GetTaskIDByName(targetName)
 
 		res, err := database.RenameTask(taskId, newName)

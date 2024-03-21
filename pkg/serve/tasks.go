@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/rocco-gossmann/tnt/pkg/database"
 )
@@ -47,6 +48,7 @@ func PostTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	taskName := r.PostForm.Get("taskname")
+	taskName = strings.TrimSpace(taskName)
 	err = database.AddTask(taskName)
 
 	if database.IsUniqueContraintError(err) {

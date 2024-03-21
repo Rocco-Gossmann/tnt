@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/rocco-gossmann/tnt/pkg/database"
 	"github.com/rocco-gossmann/tnt/pkg/utils"
@@ -15,7 +16,7 @@ var AddCMD cobra.Command = cobra.Command{
 	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		taskName := args[0]
+		taskName := strings.TrimSpace(args[0])
 		err := database.AddTask(args[0])
 
 		if err != nil {
