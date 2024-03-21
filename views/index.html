@@ -18,14 +18,16 @@
             hx-trigger="load, click"
         >Reload Tasks</button>
 
-        <form hx-post="/task" hx-target="#task-list" hx-swap="beforeend">
-            <input type="text" name="taskname" />
-            <button type="submit"> + add to list</button>
-        </form>
 
 
         <section id="tasks-section">
             <h1>Tasks:</h1>
+
+            <form hx-post="/task" hx-target="#task-list" hx-swap="beforeend">
+                <input type="text" name="taskname" />
+                <button type="submit"> + add to list</button>
+            </form>
+
             <div id="task-list">
                 Loading tasks ...
 
@@ -107,8 +109,6 @@
         {{ template "times_entry" . }} 
 
     {{ end }}
-
-        
 
 
     </section>
