@@ -4,36 +4,36 @@
     <head>
         <script type="text/javascript" src="./htmx.js" ></script>
         <link rel="stylesheet" href="./main.css" >
+        <script>
+            window.addEventListener("load", () => {
+                htmx.trigger("#btn_show_all_times", "click");
+            })
+        </script>
     </head>
 
-    <button 
-        hx-get="/tasks" 
-        hx-target="#task-list" 
-        hx-trigger="load, click"
-    >Reload Tasks</button>
+   <body class="p-2">
+        <button 
+            hx-get="/tasks" 
+            hx-target="#task-list" 
+            hx-trigger="load, click"
+        >Reload Tasks</button>
 
-    <form hx-post="/task" hx-target="#task-list" hx-swap="beforeend">
-        <input type="text" name="taskname" />
-        <button type="submit"> + add to list</button>
-    </form>
+        <form hx-post="/task" hx-target="#task-list" hx-swap="beforeend">
+            <input type="text" name="taskname" />
+            <button type="submit"> + add to list</button>
+        </form>
 
 
-    <section id="tasks-section">
-        <h1>Tasks:</h1>
-        <div id="task-list">
-            Loading tasks ...
+        <section id="tasks-section">
+            <h1>Tasks:</h1>
+            <div id="task-list">
+                Loading tasks ...
 
-        </div>
-    </section>
+            </div>
+        </section>
 
-    <section id="times-section" class="mt-4">
-        <h1>Times:</h1>
-        <button hx-get="/times" hx-target="#times-list">all</button>
-        <div id="times-list">
-
-        </div>
-    </section>
-
+        {{ template "times_section" }}
+   </body>
 </html>
 {{ end }}
 
@@ -47,7 +47,8 @@
     group hover:bg-gray-300">
         <a href="#" 
             hx-get="/times/{{ .Id }}"
-            hx-target="#times-list"
+            hx-target="#times-section"
+            hx-swap="outerHTML"
         >{{ .Name }}</a>
         <button 
             class="group-hover:bg-white"
@@ -61,24 +62,78 @@
 {{ end }}
 
 
+{{ block "times_section" . }}
+    <section id="times-section" class="
+        mt-4 px-2 py-1
+    ">
+        <div class="
+            grid grid-cols-[1fr_0fr] 
+            mt-12
+        ">
+            <h1>
+                {{ if .Label }}
+                    Times for Task: {{ .Label }}
+                {{ else }}
+                    Times:
+                {{ end }}
+            </h1>
 
-{{ block "times_list" . }}
+            <button 
+                hx-get="/times" 
+                hx-target="#times-section"
+                hx-swap="outerHTML"
+                hx-trigger="click"
+                id="btn_show_all_times"
+                class="w-fit justify-self-end"
+            >all</button>
+        </div>
+
+        <!-- headers -->
+        <div id="times-entry-headers" class="
+            hidden
+            md:grid md:grid-cols-[20%_25%_25%_18%_12%]
+            mt-4 py-1 px-2
+            group bg-gray-300
+        ">
+            <b>Task</b>
+            <b class="m-auto">Start</b>
+            <b class="m-auto">End</b>
+            <b class="m-auto">Duration</b>
+            <b>&nbsp;</b>
+        </div>
+
+    {{ range .Times }}
+        
+        {{ template "times_entry" . }} 
+
+    {{ end }}
+
+        
+
+
+    </section>
+{{ end }}
+
+
+{{ block "times_entry" . }}
     <div id="times-entry-{{ .Id }}" class="
-        grid grid-cols-[repeat(4,_1fr)_0fr] 
-        px-2 py-1
+        grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[20%_25%_25%_18%_12%] 
+        mt-4 py-1 px-2
         group hover:bg-gray-300
     ">
-        <span class="time-taskname">{{ .TaskName }}</span>
-        <span class="time-starttime m-auto">{{ .Start }}</span>
-        <span class="time-endtime m-auto">{{ .End }}</span>
-        <span class="time-duration m-auto">{{ .Duration }}</span>
+        <span class="sm:col-span-2  md:col-span-1 time-taskname font-bold md:font-normal mb-2 md:mb-0">{{ .TaskName }}</span>
+        <span class="time-starttime md:m-auto"><b class="md:hidden">Start:</b> {{ .Start }}</span>
+        <span class="time-endtime md:m-auto"><b class="md:hidden">End:</b> {{ .End }}</span>
+        <span class="time-duration md:m-auto">{{ if .Duration }}<b class="md:hidden">Duration:</b> {{ .Duration }}{{ end }}</span>
 
-        <button 
-            class="aspect-square group-hover:bg-white"
-            hx-delete="/times/{{ .Id }}"
-            hx-confirm="Do you want to delete this time?"
-            hx-target="#times-entry-{{ .Id }}"
-            hx-swap="delete"
-        >&times;</button>
+        <span class="text-right">
+            <button 
+                class="aspect-square group-hover:bg-white"
+                hx-delete="/times/{{ .Id }}"
+                hx-confirm="Do you want to delete this time?"
+                hx-target="#times-entry-{{ .Id }}"
+                hx-swap="delete"
+            >&times;</button>
+        </span>
     </div>
 {{ end }}

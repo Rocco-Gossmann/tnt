@@ -60,11 +60,7 @@ func PostTask(w http.ResponseWriter, r *http.Request) {
 
 	t, err := database.GetTaskByName(taskName)
 	if !serveErr(&w, err) {
-		if t == nil {
-			serveStatusMsg(&w, http.StatusNoContent, "element was not created for some reason")
-		} else {
-			tmpl.ExecuteTemplate(w, "task_list", t)
-		}
+		tmpl.ExecuteTemplate(w, "task_list", t)
 	}
 
 }

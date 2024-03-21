@@ -15,8 +15,8 @@ func initTasksTable() {
 }
 
 type Task struct {
-	Id uint
-	Key string
+	Id   uint
+	Key  string
 	Name string
 }
 
@@ -40,13 +40,12 @@ func GetTaskList() ([]Task, error) {
 	var sName, sKey string
 	var iID uint
 
-
 	for rows.Next() {
 		rows.Scan(&iID, &sKey, &sName)
 		ret = append(ret, Task{
-			Id: iID,
+			Id:   iID,
 			Name: sName,
-			Key: sKey,
+			Key:  sKey,
 		})
 	}
 	defer rows.Close()
@@ -70,39 +69,40 @@ func internal_GenerateTaskKey(taskName string) (string, uint, error) {
 	return taskKey, uint(taskId.Int64), err
 }
 
-func GetTaskByName(taskName string) (*Task, error){
+func GetTaskByName(taskName string) (t Task, err error) {
+
 	_, taskId, err := internal_GenerateTaskKey(taskName)
+
 	if err != nil {
-		return nil, err
+		return
+	}
+	
+	t, err = GetTaskById(taskId)
+	if err != nil {
+		// Rewrite error, since user did not asks for id, but name
+		err = fmt.Errorf("no task for name '%s' found", taskName)
 	}
 
-	res, err := QueryStatement("SELECT id, textkey, name from tasks where id=?", taskId);
+	return
+}
+
+func GetTaskById(iTaskId uint) (t Task, err error) {
+
+	res, err := QueryStatement("SELECT id, textkey, name from tasks where id=?", iTaskId)
+
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	defer res.Close()
 
-	var (
-		id uint
-		name string
-		textkey string
-	)
-
 	if res.Next() {
-		err = res.Scan(&id, &textkey, &name)
-		if err != nil {
-			return nil, err
-		}
+		err = res.Scan(&t.Id, &t.Key, &t.Name)
 	} else {
-		return nil, nil
+		err = fmt.Errorf("no task for id '%d' found", iTaskId)
 	}
 
-	return &Task{
-		Id: id,
-		Key: textkey,
-		Name: name,
-	}, nil
+	return
 }
 
 func GetTaskIDByName(taskName string) uint {
@@ -126,10 +126,10 @@ func GetTaskIDByName(taskName string) uint {
 }
 
 func (tasks TaskList) ExtractTaskListNames() []string {
-	lst := make([]string, len(tasks), len(tasks));
+	lst := make([]string, len(tasks), len(tasks))
 
 	for i, t := range tasks {
-		lst[i] = t.Name;
+		lst[i] = t.Name
 	}
 
 	return lst
@@ -157,21 +157,20 @@ func RenameTask(taskId uint, newName string) (sql.Result, error) {
 	return ExecStatement("UPDATE tasks SET textkey = ?, name = ? WHERE id = ?", taskKey, newName, taskId)
 }
 
-func DropTask(taskId uint) (int64, error)  {
+func DropTask(taskId uint) (int64, error) {
 	_, err := ExecStatement("DELETE FROM times WHERE taskId = ?", taskId)
 	if err != nil {
-		return 0, err 
+		return 0, err
 	}
-	r, err :=  ExecStatement("DELETE FROM tasks WHERE id = ?", taskId)
+	r, err := ExecStatement("DELETE FROM tasks WHERE id = ?", taskId)
 	if err != nil {
 		return 0, err
 	}
 
-	rows, err := r.RowsAffected()	
+	rows, err := r.RowsAffected()
 	if err != nil {
 		return 0, err
 	}
-
 
 	return rows, nil
 }
