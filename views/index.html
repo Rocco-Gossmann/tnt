@@ -40,7 +40,6 @@
 {{ end }}
 
 
-
 {{ block "task_list" . }}
 <div id="task-entry-{{ .Id }}" class="
     border-b border-b-gray-300 
@@ -52,14 +51,19 @@
             hx-target="#times-section"
             hx-swap="outerHTML"
         >{{ .Name }}</a>
-        <button 
-            class="group-hover:bg-white"
-            hx-delete="/task/{{ .Id }}"
-            hx-confirm="Do you want to delete this task and all its times?"
-            hx-target="#task-entry-{{ .Id }}"
-            hx-swap="delete"
-
-        >&times;</button>
+        <span class="text-nowrap">
+            <button 
+                class="inline-block group-hover:bg-white aspect-square w-[15mm]"
+                hx-delete="/task/{{ .Id }}"
+                hx-confirm="Do you want to delete this task and all its times?"
+                hx-target="#task-entry-{{ .Id }}"
+                hx-swap="delete"
+            >&times;</button>
+            <button 
+                class="inline-block group-hover:bg-white aspect-square w-[15mm] font-[initial]"
+                hx-post="/time/{{ .Id }}"
+            >&#x23F5</button>
+        </span>
     </div>
 {{ end }}
 

@@ -564,6 +564,10 @@ video {
   display: block;
 }
 
+.inline-block {
+  display: inline-block;
+}
+
 .table {
   display: table;
 }
@@ -585,6 +589,18 @@ video {
   width: fit-content;
 }
 
+.w-\[2cm\] {
+  width: 2cm;
+}
+
+.w-\[1cm\] {
+  width: 1cm;
+}
+
+.w-\[15mm\] {
+  width: 15mm;
+}
+
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
@@ -599,6 +615,10 @@ video {
 
 .justify-self-end {
   justify-self: end;
+}
+
+.text-nowrap {
+  text-wrap: nowrap;
 }
 
 .border-b {
@@ -631,6 +651,14 @@ video {
 
 .text-right {
   text-align: right;
+}
+
+.font-sans {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.font-\[initial\] {
+  font-family: initial;
 }
 
 .font-bold {

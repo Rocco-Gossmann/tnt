@@ -8,6 +8,29 @@ import (
 	"github.com/rocco-gossmann/tnt/pkg/database"
 )
 
+func PostTime(w http.ResponseWriter, r *http.Request) {
+	runInit()
+	defer runDeInit()
+
+	iTaskID, err := strconv.ParseInt(r.PathValue("taskid"), 10, 64)
+	if serveErr(&w, err) {
+		return
+	}
+
+	if database.TimedTaskIsRunning(uint(iTaskID)) {
+		serveStatusMsg(&w, http.StatusAccepted, "&#x23F9;")
+		return
+	}
+	database.FinishCurrentlyRunningTimes()
+
+	_, err = database.StartNewTimeRaw(uint(iTaskID))
+	if serveErr(&w, err) {
+		return
+	}
+
+	serveStatusMsg(&w, http.StatusCreated, "&#x23F9;")
+}
+
 func GetTimes(w http.ResponseWriter, r *http.Request) {
 
 	runInit()

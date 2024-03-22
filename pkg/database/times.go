@@ -24,11 +24,11 @@ func initTimesTable() {
 }
 
 type Time struct {
-	Id uint
-	Start string	
-	End string
+	Id       uint
+	Start    string
+	End      string
 	Duration string
-	TaskId uint
+	TaskId   uint
 	TaskName string
 }
 
@@ -73,18 +73,26 @@ func FinishCurrentlyRunningTimes() {
 	log.Printf("Ended %d running `time` entr%s", rowCnt, suffix)
 }
 
-// @panic error - on db fail
-func StartNewTime(taskId uint) int {
+func StartNewTimeRaw(taskId uint) (insertId int64, err error) {
 	startTS := getSQLTimeNow()
 
 	result, err := ExecStatement("INSERT INTO times(taskId, start) values(?, ?)", taskId, startTS)
-	utils.Err(err)
+	if err != nil {
+		return
+	}
 
-	insertId, err := result.LastInsertId()
+	insertId, err = result.LastInsertId()
+
+	return
+}
+
+// @panic error - on db fail
+func StartNewTime(taskId uint) int {
+
+	insertId, err := StartNewTimeRaw(taskId)
 	utils.Err(err)
 
 	return int(insertId)
-
 }
 
 func GetTimesRaw(taskId uint) ([]Time, error) {
@@ -115,9 +123,8 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 		return nil, err
 	}
 
-	
 	var (
-		id, tid uint
+		id, tid    uint
 		s, e, d, n sql.NullString
 	)
 
@@ -125,8 +132,7 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 
 		err := res.Scan(&id, &s, &e, &d, &tid, &n)
 
-		log.Println(id, s, e, d, tid, n);
-
+		log.Println(id, s, e, d, tid, n)
 
 		if !s.Valid {
 			s.String = ""
@@ -149,13 +155,13 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 		}
 
 		ret = append(ret, Time{
-			Id: id,
-			Start: s.String,
-			End: e.String,
+			Id:       id,
+			Start:    s.String,
+			End:      e.String,
 			Duration: d.String,
-			TaskId: tid,
+			TaskId:   tid,
 			TaskName: n.String,
-		})		
+		})
 	}
 
 	return ret, nil
