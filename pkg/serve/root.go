@@ -36,12 +36,6 @@ func serveStatusMsg(w *http.ResponseWriter, status int, msg string) {
 	return
 }
 
-func noCacheHeaders(res *http.ResponseWriter) {
-	(*res).Header().Set("pragma", "no-cache")
-	(*res).Header().Set("cache-control", "post-check=0, pre-check=0, no-store, no-cache, must-revalidate, max-age=0")
-	(*res).Header().Set("expires", "Thu, 01 Jan 1970 00:00:00 GMT")
-}
-
 func makeResponseJSON(res *http.ResponseWriter) {
 	(*res).Header().Set("content-type", "application/json")
 }

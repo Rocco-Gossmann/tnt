@@ -41,8 +41,6 @@ func GetTimes(w http.ResponseWriter, r *http.Request) {
 	log.SetPrefix("GET /times => ")
 	log.Println("called GET /times ")
 
-	noCacheHeaders(&w)
-
 	sTaskID := r.PathValue("taskid")
 
 	if sTaskID != "" {

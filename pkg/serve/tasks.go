@@ -14,10 +14,6 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 	runInit()
 	defer runDeInit()
 
-	log.SetPrefix("GET /tasks => ")
-	log.Println("called GET /tasks ")
-	noCacheHeaders(&w)
-
 	tasks, err := database.GetTaskList()
 	if serveErr(&w, err) {
 		return
@@ -72,7 +68,6 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	defer runDeInit()
 
 	log.SetPrefix("DELETE /tasks => ")
-	noCacheHeaders(&w)
 
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	serveErr(&w, err)

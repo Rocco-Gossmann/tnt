@@ -584,21 +584,13 @@ video {
   aspect-ratio: 1 / 1;
 }
 
+.w-\[15mm\] {
+  width: 15mm;
+}
+
 .w-fit {
   width: -moz-fit-content;
   width: fit-content;
-}
-
-.w-\[2cm\] {
-  width: 2cm;
-}
-
-.w-\[1cm\] {
-  width: 1cm;
-}
-
-.w-\[15mm\] {
-  width: 15mm;
 }
 
 .grid-cols-1 {
@@ -651,10 +643,6 @@ video {
 
 .text-right {
   text-align: right;
-}
-
-.font-sans {
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .font-\[initial\] {
