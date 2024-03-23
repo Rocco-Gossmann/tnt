@@ -568,6 +568,10 @@ video {
   display: inline-block;
 }
 
+.flex {
+  display: flex;
+}
+
 .table {
   display: table;
 }
@@ -603,6 +607,10 @@ video {
 
 .items-end {
   align-items: flex-end;
+}
+
+.gap-7 {
+  gap: 1.75rem;
 }
 
 .justify-self-end {

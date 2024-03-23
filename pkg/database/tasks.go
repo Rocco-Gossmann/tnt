@@ -15,42 +15,53 @@ func initTasksTable() {
 }
 
 type Task struct {
-	Id   uint
-	Key  string
-	Name string
+	Id     uint
+	Key    string
+	Name   string
+	Active bool
 }
 
 type TaskList []Task
 
 // GetTaskList returns a slice of all Tasknames currently registered
-func GetTaskList() ([]Task, error) {
-	var ret []Task
+func GetTaskList() (ret []Task, err error) {
 
-	stmt, err := db.Prepare("SELECT id, textkey, name FROM tasks")
+	// Pretpare statements
+	stmt, err := db.Prepare(`
+		SELECT 
+			ta.id, 
+			ta.textkey, 
+			ta.name,
+			(SELECT COUNT(*) FROM times ti WHERE ti.taskId=ta.id AND ti.End IS NULL) active
+		FROM 
+			tasks ta
+	`)
 	if err != nil {
-		return ret, err
+		return
 	}
 	defer stmt.Close()
 
+	// Run Query
 	rows, err := stmt.Query()
 	if err != nil {
-		return ret, err
-	}
-
-	var sName, sKey string
-	var iID uint
-
-	for rows.Next() {
-		rows.Scan(&iID, &sKey, &sName)
-		ret = append(ret, Task{
-			Id:   iID,
-			Name: sName,
-			Key:  sKey,
-		})
+		return
 	}
 	defer rows.Close()
 
-	return ret, nil
+	// Process Rows
+	var t Task
+	var active int
+
+	for rows.Next() {
+		err = rows.Scan(&t.Id, &t.Key, &t.Name, &active)
+		if err != nil {
+			return
+		}
+		t.Active = active == 1
+		ret = append(ret, t)
+	}
+
+	return
 }
 
 func internal_GenerateTaskKey(taskName string) (string, uint, error) {
@@ -76,7 +87,7 @@ func GetTaskByName(taskName string) (t Task, err error) {
 	if err != nil {
 		return
 	}
-	
+
 	t, err = GetTaskById(taskId)
 	if err != nil {
 		// Rewrite error, since user did not asks for id, but name

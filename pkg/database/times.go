@@ -214,3 +214,8 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 
 	return ret, err
 }
+
+func DeleteTime(iTimeId uint) error {
+	_, err := ExecStatement("DELETE FROM times WHERE id=?", iTimeId)
+	return err
+}

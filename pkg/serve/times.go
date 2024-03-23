@@ -28,7 +28,16 @@ func PostTime(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serveStatusMsg(&w, http.StatusCreated, "&#x23F9;")
+	serveStatusMsg(&w, http.StatusCreated, "OK")
+}
+
+func EndTime(w http.ResponseWriter, r *http.Request) {
+	runInit()
+	defer runDeInit()
+
+	database.FinishCurrentlyRunningTimes()
+
+	serveStatusMsg(&w, http.StatusNoContent, "OK")
 }
 
 func GetTimes(w http.ResponseWriter, r *http.Request) {
@@ -74,4 +83,21 @@ func GetTimes(w http.ResponseWriter, r *http.Request) {
 		tmpl.ExecuteTemplate(w, "times_section", context)
 	}
 
+}
+
+func DeleteTime(w http.ResponseWriter, r *http.Request) {
+	runInit()
+	defer runDeInit()
+
+	iTimeID, err := strconv.ParseInt(r.PathValue("timeid"), 10, 64)
+	if serveErr(&w, err) {
+		return
+	}
+
+	err = database.DeleteTime(uint(iTimeID))
+	if serveErr(&w, err) {
+		return
+	}
+
+	serveStatusMsg(&w, http.StatusOK, "OK")
 }

@@ -44,8 +44,11 @@ var ServeCMD cobra.Command = cobra.Command{
 		mux.HandleFunc("GET /tasks", globalHeaders(serve.GetTasks))
 		mux.HandleFunc("DELETE /task/{id}", globalHeaders(serve.DeleteTask))
 
-		mux.HandleFunc("POST /time/{taskid}", globalHeaders(serve.PostTime))
+		mux.HandleFunc("POST /timer/{taskid}", globalHeaders(serve.PostTime))
+		mux.HandleFunc("DELETE /timer", globalHeaders(serve.EndTime))
+		mux.HandleFunc("DELETE /timer/{taskid}", globalHeaders(serve.EndTime))
 		mux.HandleFunc("GET /times/{taskid}", globalHeaders(serve.GetTimes))
+		mux.HandleFunc("DELETE /time/{timeid}", globalHeaders(serve.DeleteTime))
 		mux.HandleFunc("GET /times", globalHeaders(serve.GetTimes))
 
 		server := http.Server{
