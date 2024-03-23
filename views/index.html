@@ -5,14 +5,41 @@
         <script type="text/javascript" src="./htmx.js" ></script>
         <link rel="stylesheet" href="./main.css" >
         <script>
-            window.addEventListener("load", () => {
-                htmx.trigger("#btn_show_all_times", "click");
-            })
 
-            function reloadTasks() {
-                htmx.trigger("#btn_show_all_times", "click"); 
+            let currentTask = 0 
+
+            function reloadTimes() {
+                if(currentTask === 0) {
+                    console.log("load all times");
+                    htmx.trigger("#btn_show_all_times", "click"); 
+                } else {
+                    console.log(`load times for task ${currentTask}`);
+                    htmx.trigger(`#show_task_${currentTask}`, "click"); 
+                }
+            }
+
+            function reloadTasks(ev) {
+                console.log("reload tasks");
                 htmx.trigger("#btn_reload_tasks", "click"); 
             }
+
+            function reloadAll() {
+                console.group("reload all")
+                reloadTimes()
+                reloadTasks()
+                console.groupEnd()
+            }
+
+            function onTaskDeleted(ev, taskId) {
+                if(taskId === currentTask) {
+                    currentTask = 0
+                }
+                reloadAll()
+
+                htmx.remove(`#task-entry-${taskId}`)
+            }
+
+            window.addEventListener("load", reloadAll, { once: true })
         </script>
     </head>
 
@@ -21,7 +48,6 @@
             id="btn_reload_tasks"
             hx-get="/tasks" 
             hx-target="#task-list" 
-            hx-trigger="load, click"
         >Reload Tasks</button>
 
         <section id="tasks-section">
@@ -49,32 +75,36 @@
     border-b border-b-gray-300 
     px-2 py-1 
     grid grid-cols-[1fr_0fr] items-end 
-    group hover:bg-gray-300">
+    group hover:bg-gray-300"
+>
         <a href="#" 
+            id="show_task_{{ .Id }}"
             hx-get="/times/{{ .Id }}"
             hx-target="#times-section"
             hx-swap="outerHTML"
+            hx-on::xhr:loadend="currentTask = {{ .Id }}, reloadAll()"
         >{{ .Name }}</a>
         <span class="text-nowrap">
             <button 
-                class="inline-block group-hover:bg-white aspect-square w-[15mm]"
+                class="inline-block group-hover:bg-white aspect-square w-[12mm]"
                 hx-delete="/task/{{ .Id }}"
                 hx-confirm="Do you want to delete this task and all its times?"
                 hx-target="#task-entry-{{ .Id }}"
-                hx-swap="delete"
+                hx-swap="none"
+                hx-on::xhr:loadend="onTaskDeleted(event, {{ .Id }})"
             >&times;</button>
 
             {{ if .Active }}
                 <button 
-                    class="inline-block group-hover:bg-white aspect-square w-[15mm] font-[initial]"
+                    class="inline-block group-hover:bg-white aspect-square w-[12mm] font-[initial]"
                     hx-delete="/timer/{{ .Id }}"
-                    hx-on::after-request="reloadTasks()"
+                    hx-on::after-request="currentTask = {{ .Id }}; reloadAll()"
                 >&#x23F9;</button>
             {{ else }}
                 <button 
-                    class="inline-block group-hover:bg-white aspect-square w-[15mm] font-[initial]"
+                    class="inline-block group-hover:bg-white aspect-square w-[12mm] font-[initial]"
                     hx-post="/timer/{{ .Id }}"
-                    hx-on::after-request="reloadTasks()"
+                    hx-on::after-request="currentTask = {{ .Id }}; reloadAll()"
                 >&#x23F5</button>
             {{ end }}
         </span>
@@ -103,7 +133,7 @@
             <button 
                 class="inline-block group-hover:bg-white"
                 hx-delete="/timer"
-                hx-on::after-request="reloadTasks()"
+                hx-on::after-request="reloadAll()"
             >stop any timer</button>
             <button 
                 hx-get="/times" 
@@ -154,7 +184,7 @@
 
         <span class="text-right">
             <button 
-                class="aspect-square group-hover:bg-white"
+                class="aspect-square group-hover:bg-white w-[12mm]"
                 hx-delete="/time/{{ .Id }}"
                 hx-confirm="Do you want to delete this time?"
                 hx-target="#times-entry-{{ .Id }}"

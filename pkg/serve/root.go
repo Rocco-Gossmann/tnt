@@ -4,8 +4,6 @@ import (
 	"log"
 	"net/http"
 	"text/template"
-
-	"github.com/rocco-gossmann/tnt/pkg/database"
 )
 
 var tmpl *template.Template
@@ -51,7 +49,7 @@ func runInit() {
 		tmpl = t
 	}
 
-	database.InitDB("")
+	// database.InitDB("")
 }
 
 func runDeInit() {
@@ -59,5 +57,5 @@ func runDeInit() {
 		tmpl = nil
 	}
 
-	database.DeInitDB()
+	// database.DeInitDB()
 }

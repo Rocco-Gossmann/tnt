@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/rocco-gossmann/tnt/pkg/database"
 	"github.com/rocco-gossmann/tnt/pkg/serve"
 
 	"github.com/spf13/cobra"
@@ -30,7 +29,7 @@ var ServeCMD cobra.Command = cobra.Command{
 	Use: "serve [-p|--port]",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		database.DeInitDB()
+		//database.DeInitDB()
 
 		log.SetPrefix("tnt-server")
 

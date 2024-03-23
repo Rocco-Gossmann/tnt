@@ -77,11 +77,7 @@ func GetTimes(w http.ResponseWriter, r *http.Request) {
 		Times: times,
 	}
 
-	if times == nil {
-		serveStatusMsg(&w, http.StatusNoContent, "no tasks")
-	} else {
-		tmpl.ExecuteTemplate(w, "times_section", context)
-	}
+	tmpl.ExecuteTemplate(w, "times_section", context)
 
 }
 

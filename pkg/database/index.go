@@ -103,7 +103,6 @@ func DeInitDB() {
 		db = nil
 		log.Println("DB DeInit")
 	}
-
 }
 
 // Check if an error has todo with a unique key already existing
