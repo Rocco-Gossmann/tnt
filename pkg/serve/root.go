@@ -48,14 +48,4 @@ func runInit() {
 
 		tmpl = t
 	}
-
-	// database.InitDB("")
-}
-
-func runDeInit() {
-	if tmpl != nil {
-		tmpl = nil
-	}
-
-	// database.DeInitDB()
 }

@@ -5,17 +5,16 @@ import (
 	"net/http"
 )
 
-
-
 func GetIndex(w http.ResponseWriter, r *http.Request) {
 
-	log.SetPrefix(" GET / => ")
-	log.Println("called GET / ", context, tmpl )
+	runInit()
 
-	runInit();
-	context.Cnt++;
-
-
-	tmpl.ExecuteTemplate(w, "index", context)
+	if r.URL.Path == "/" {
+		log.Println("loading index")
+		tmpl.ExecuteTemplate(w, "index", context)
+	} else {
+		log.Println("not found")
+		serveStatusMsg(&w, 404, "not found")
+	}
 
 }

@@ -1,7 +1,6 @@
 package serve
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -10,7 +9,6 @@ import (
 
 func PostTime(w http.ResponseWriter, r *http.Request) {
 	runInit()
-	defer runDeInit()
 
 	iTaskID, err := strconv.ParseInt(r.PathValue("taskid"), 10, 64)
 	if serveErr(&w, err) {
@@ -33,7 +31,6 @@ func PostTime(w http.ResponseWriter, r *http.Request) {
 
 func EndTime(w http.ResponseWriter, r *http.Request) {
 	runInit()
-	defer runDeInit()
 
 	database.FinishCurrentlyRunningTimes()
 
@@ -43,12 +40,8 @@ func EndTime(w http.ResponseWriter, r *http.Request) {
 func GetTimes(w http.ResponseWriter, r *http.Request) {
 
 	runInit()
-	defer runDeInit()
 
 	var task database.Task
-
-	log.SetPrefix("GET /times => ")
-	log.Println("called GET /times ")
 
 	sTaskID := r.PathValue("taskid")
 
@@ -83,7 +76,6 @@ func GetTimes(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTime(w http.ResponseWriter, r *http.Request) {
 	runInit()
-	defer runDeInit()
 
 	iTimeID, err := strconv.ParseInt(r.PathValue("timeid"), 10, 64)
 	if serveErr(&w, err) {

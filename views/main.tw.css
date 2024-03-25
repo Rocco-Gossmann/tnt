@@ -3,26 +3,30 @@
 @tailwind utilities;
 
 H1 {
-  @apply font-bold text-lg
+  @apply font-bold text-lg;
 }
 
 BUTTON {
-  @apply 
-    bg-gray-300
+  @apply bg-gray-300
     border-[2px] 
     rounded-[.5rem] 
     border-gray-300
     px-4 
-    py-1 
-  ;
+    py-1;
 }
 
 INPUT {
-  @apply
-    border-[2px] 
+  @apply border-[2px] 
     rounded-[.5rem] 
     border-gray-300
     px-4 
-    py-1 
+    py-1;
+}
+
+.btn-table-row-option {
+  @apply inline-block 
+    group-hover:bg-white 
+    aspect-square 
+    w-[12mm]
   ;
 }

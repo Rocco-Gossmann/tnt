@@ -1,6 +1,7 @@
 package cmds
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -21,6 +22,20 @@ func globalHeaders(next HandlerFunc) HandlerFunc {
 	}
 }
 
+func logRequestPrefix(prefix string, next HandlerFunc) HandlerFunc {
+	log.SetPrefix(prefix)
+	return logRequest(next)
+}
+
+func logRequest(next HandlerFunc) HandlerFunc {
+	prefix := log.Prefix()
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.SetPrefix(fmt.Sprintf("%s -> [%s] %s => ", prefix, r.Method, r.URL.Path))
+		log.Println("called")
+		next(w, r)
+	}
+}
+
 func FileServer(fl string) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, fl) }
 }
@@ -29,26 +44,22 @@ var ServeCMD cobra.Command = cobra.Command{
 	Use: "serve [-p|--port]",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		//database.DeInitDB()
-
-		log.SetPrefix("tnt-server")
-
 		mux := http.NewServeMux()
 
-		mux.HandleFunc("GET /", globalHeaders(serve.GetIndex))
-		mux.HandleFunc("GET /htmx.js", FileServer("views/htmx.js"))
-		mux.HandleFunc("GET /main.css", globalHeaders(FileServer("views/main.css")))
+		mux.HandleFunc("GET /", logRequestPrefix("(GET /)", globalHeaders(serve.GetIndex)))
+		mux.HandleFunc("GET /htmx.js", logRequestPrefix("(GET /htmx.js)", FileServer("views/htmx.js")))
+		mux.HandleFunc("GET /main.css", logRequestPrefix("(GET /main.css)", globalHeaders(FileServer("views/main.css"))))
 
-		mux.HandleFunc("POST /task", globalHeaders(serve.PostTask))
-		mux.HandleFunc("GET /tasks", globalHeaders(serve.GetTasks))
-		mux.HandleFunc("DELETE /task/{id}", globalHeaders(serve.DeleteTask))
+		mux.HandleFunc("POST /task", logRequestPrefix("(POST /task)", globalHeaders(serve.PostTask)))
+		mux.HandleFunc("GET /tasks", logRequestPrefix("(GET /tasks)", globalHeaders(serve.GetTasks)))
+		mux.HandleFunc("DELETE /task/{id}", logRequestPrefix("(DELETE /task/{id})", globalHeaders(serve.DeleteTask)))
 
-		mux.HandleFunc("POST /timer/{taskid}", globalHeaders(serve.PostTime))
-		mux.HandleFunc("DELETE /timer", globalHeaders(serve.EndTime))
-		mux.HandleFunc("DELETE /timer/{taskid}", globalHeaders(serve.EndTime))
-		mux.HandleFunc("GET /times/{taskid}", globalHeaders(serve.GetTimes))
-		mux.HandleFunc("DELETE /time/{timeid}", globalHeaders(serve.DeleteTime))
-		mux.HandleFunc("GET /times", globalHeaders(serve.GetTimes))
+		mux.HandleFunc("POST /timer/{taskid}", logRequestPrefix("(POST /timer/{taskid})", globalHeaders(serve.PostTime)))
+		mux.HandleFunc("DELETE /timer", logRequestPrefix("(DELETE /timer)", globalHeaders(serve.EndTime)))
+		mux.HandleFunc("DELETE /timer/{taskid}", logRequestPrefix("(DELETE /timer/{taskid})", globalHeaders(serve.EndTime)))
+		mux.HandleFunc("GET /times/{taskid}", logRequestPrefix("(GET /times/{taskid})", globalHeaders(serve.GetTimes)))
+		mux.HandleFunc("DELETE /time/{timeid}", logRequestPrefix("(DELETE /time/{timeid})", globalHeaders(serve.DeleteTime)))
+		mux.HandleFunc("GET /times", logRequestPrefix("(GET /times)", globalHeaders(serve.GetTimes)))
 
 		server := http.Server{
 			Addr:    "0.0.0.0:7353",

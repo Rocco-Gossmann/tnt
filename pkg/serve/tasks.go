@@ -12,7 +12,6 @@ import (
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 
 	runInit()
-	defer runDeInit()
 
 	tasks, err := database.GetTaskList()
 	if serveErr(&w, err) {
@@ -28,10 +27,6 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 func PostTask(w http.ResponseWriter, r *http.Request) {
 
 	runInit()
-	defer runDeInit()
-
-	log.SetPrefix("POST /task => ")
-	log.Println("called POST /task ", r)
 
 	err := r.ParseForm()
 	serveErr(&w, err)
@@ -65,14 +60,9 @@ func PostTask(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	runInit()
-	defer runDeInit()
-
-	log.SetPrefix("DELETE /tasks => ")
 
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	serveErr(&w, err)
-
-	log.Printf("called DELETE /task/%d\n", id)
 
 	if id > 0 {
 		rows, err := database.DropTask(uint(id))
