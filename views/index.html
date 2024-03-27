@@ -53,8 +53,13 @@
         <section id="tasks-section">
             <h1>Tasks:</h1>
 
-            <form hx-post="/task" hx-target="#task-list" hx-swap="beforeend">
-                <input type="text" name="taskname" />
+            <form 
+                hx-post="/task" 
+                hx-target="#task-list" 
+                hx-swap="beforeend" 
+                hx-on::xhr:loadend="document.querySelector('#inp_new_task_text').value=''"
+            >
+                <input type="text" name="taskname" id="inp_new_task_text" />
                 <button type="submit"> + add to list</button>
             </form>
 
