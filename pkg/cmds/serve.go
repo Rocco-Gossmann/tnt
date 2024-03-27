@@ -4,13 +4,19 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os/exec"
+	"runtime"
+	"time"
 
 	"github.com/rocco-gossmann/tnt/pkg/serve"
+	"github.com/rocco-gossmann/tnt/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
 
 type HandlerFunc func(writer http.ResponseWriter, request *http.Request)
+
+var openCMD = "";
 
 func globalHeaders(next HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -40,9 +46,34 @@ func FileServer(fl string) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, fl) }
 }
 
+func runOpen(cmd string) {
+	log.Println("let's goooooooo !!!!!!")
+	dur, err := time.ParseDuration("1s")
+	if err != nil {
+		fmt.Println("[Warning!] Can't open browser", err)
+		return
+	}
+	log.Println("waiting for:", dur)
+	t := time.NewTimer(dur)
+	<-t.C
+
+	log.Println("run xdg-open", dur)
+
+	err = exec.Command(cmd, "http://localhost:7353").Run();
+	if err != nil {
+		fmt.Println("[Warning!] Can't open browser", err)
+	}
+	return
+}
+
 var ServeCMD cobra.Command = cobra.Command{
 	Use: "serve [-p|--port]",
 	Run: func(cmd *cobra.Command, args []string) {
+
+		port, err := cmd.Flags().GetUint32("port")
+		if err != nil {
+			utils.Failf("serve error: %s", err)
+		}
 
 		mux := http.NewServeMux()
 
@@ -62,11 +93,30 @@ var ServeCMD cobra.Command = cobra.Command{
 		mux.HandleFunc("GET /times", logRequestPrefix("(GET /times)", globalHeaders(serve.GetTimes)))
 
 		server := http.Server{
-			Addr:    "0.0.0.0:7353",
+			Addr:    fmt.Sprintf("0.0.0.0:%d", port),
 			Handler: mux,
 		}
 
-		server.ListenAndServe()
+		switch {
+			case runtime.GOOS == "macos": go runOpen("open");
 
+			case runtime.GOOS == "linux": go runOpen("xdg-open");
+
+			default: fmt.Println("can't open on '",runtime.GOOS,"' yet"); // TODO: Implement
+		}
+
+
+		fmt.Printf("now listening at: %s", server.Addr)
+		err = server.ListenAndServe()
+		if err != nil {
+			utils.Failf("serve error: %s", err)
+		}
 	},
+}
+
+func init() {
+	ServeCMD.Flags().Uint32P("port", "p", 7353, "the port on which to serve the Web-Interface")
+	ServeCMD.Flags().BoolP("open", "o", false, "try to open the interface in your browser")
+
+		
 }
