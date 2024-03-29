@@ -6,6 +6,8 @@ A CLI tool to keep track of how long certain tasks have taken
 * [Goal of the Project](#goal-of-the-project)
 * [installation](#installation)
 * [usage](#usage)
+    * [The Web interface](#the-web-interface)
+    * [The Commandline interface](#the-commandline-interface)
     * [Switching to another task.](#switching-to-another-task)
     * [Getting a list of Tasks and how much time was spend in them](#getting-a-list-of-tasks-and-how-much-time-was-spend-in-them)
     * [Getting a full list of Times](#getting-a-full-list-of-times)
@@ -34,6 +36,22 @@ build guide further down [Build it yourself](#build-it-yourself)
 
 
 ## usage
+
+
+
+### The Web interface
+don't worry, despite it saying "Web", no data will ever leave your computer.
+Instead your default browser is just used to render the interface.
+
+to use Tasks 'n Times via the Web-Interface, call the following command from the
+command line.
+```bash
+tnt serve --open
+```
+
+
+
+### The Commandline interface
 For now this is CLI (Command line interface) tool only
 Easily usable via Windows Powershell/CMD or Unix Bash, ZSH, etc. 
 

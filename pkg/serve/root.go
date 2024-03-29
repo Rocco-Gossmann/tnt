@@ -6,15 +6,8 @@ import (
 	"text/template"
 )
 
+
 var tmpl *template.Template
-
-type IndexContext struct {
-	Cnt uint
-}
-
-var context IndexContext = IndexContext{
-	Cnt: 0,
-}
 
 func serveErr(res *http.ResponseWriter, err error) bool {
 
@@ -40,7 +33,7 @@ func makeResponseJSON(res *http.ResponseWriter) {
 
 func runInit() {
 	if tmpl == nil {
-		t, err := template.ParseFiles("views/index.html")
+		t, err := template.ParseFS(views, "views/index.html")
 
 		if err != nil {
 			log.Fatal("failed to parse files", err)
@@ -49,3 +42,8 @@ func runInit() {
 		tmpl = t
 	}
 }
+
+func FileServer(fl string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) { http.ServeFileFS(w, r, views, fl) }
+}
+

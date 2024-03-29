@@ -42,10 +42,6 @@ func logRequest(next HandlerFunc) HandlerFunc {
 	}
 }
 
-func FileServer(fl string) HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, fl) }
-}
-
 func runOpen(cmd string, url string) {
 	log.Println("let's goooooooo !!!!!!")
 	dur, err := time.ParseDuration("1s")
@@ -78,8 +74,8 @@ var ServeCMD cobra.Command = cobra.Command{
 		mux := http.NewServeMux()
 
 		mux.HandleFunc("GET /", logRequestPrefix("(GET /)", globalHeaders(serve.GetIndex)))
-		mux.HandleFunc("GET /htmx.js", logRequestPrefix("(GET /htmx.js)", FileServer("views/htmx.js")))
-		mux.HandleFunc("GET /main.css", logRequestPrefix("(GET /main.css)", globalHeaders(FileServer("views/main.css"))))
+		mux.HandleFunc("GET /htmx.js", logRequestPrefix("(GET /htmx.js)", serve.FileServer("views/htmx.js")))
+		mux.HandleFunc("GET /main.css", logRequestPrefix("(GET /main.css)", globalHeaders(serve.FileServer("views/main.css"))))
 
 		mux.HandleFunc("POST /task", logRequestPrefix("(POST /task)", globalHeaders(serve.PostTask)))
 		mux.HandleFunc("GET /tasks", logRequestPrefix("(GET /tasks)", globalHeaders(serve.GetTasks)))
