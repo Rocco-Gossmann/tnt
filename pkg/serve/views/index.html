@@ -139,7 +139,7 @@
                 class="inline-block group-hover:bg-white"
                 hx-delete="/timer"
                 hx-on::after-request="reloadAll()"
-            >stop any timer</button>
+            >stop Timer</button>
             <button 
                 hx-get="/times" 
                 hx-target="#times-section"
@@ -147,7 +147,7 @@
                 hx-trigger="click"
                 id="btn_show_all_times"
                 class="w-fit justify-self-end"
-            >all</button>
+            >all Tasks</button>
             </span>
         </div>
 
@@ -182,7 +182,12 @@
         mt-4 py-1 px-2
         group hover:bg-gray-300
     ">
-        <span class="sm:col-span-2  md:col-span-1 time-taskname font-bold md:font-normal mb-2 md:mb-0">{{ .TaskName }}</span>
+        <span class="sm:col-span-2  md:col-span-1 time-taskname font-bold md:font-normal mb-2 md:mb-0"
+            hx-get="/times/{{ .Id }}"
+            hx-target="#times-section"
+            hx-swap="outerHTML"
+            hx-on::xhr:loadend="currentTask = {{ .Id }}, reloadAll()"
+        > {{ .TaskName }}</span>
         <span class="time-starttime md:m-auto"><b class="md:hidden">Start:</b> {{ .Start }}</span>
         <span class="time-endtime md:m-auto"><b class="md:hidden">End:</b> {{ .End }}</span>
         <span class="time-duration md:m-auto">{{ if .Duration }}<b class="md:hidden">Duration:</b> {{ .Duration }}{{ end }}</span>
