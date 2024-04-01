@@ -11,6 +11,7 @@ import (
 
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 
+	log.Println("call GetTasks")
 	runInit()
 
 	tasks, err := database.GetTaskList()
@@ -18,9 +19,7 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, t := range tasks {
-		tmpl.ExecuteTemplate(w, "task_list", t)
-	}
+	tmpl.ExecuteTemplate(w, "task_list_section", tasks)
 
 }
 
@@ -30,8 +29,6 @@ func PostTask(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	serveErr(&w, err)
-
-	log.Println("Form: ", r.PostForm)
 
 	if !r.PostForm.Has("taskname") {
 		serveStatusMsg(&w, http.StatusBadRequest, "missing taskname")

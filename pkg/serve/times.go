@@ -1,6 +1,7 @@
 package serve
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -10,11 +11,13 @@ import (
 func PostTime(w http.ResponseWriter, r *http.Request) {
 	runInit()
 
+	log.Println("called: PostTime")
+
 	iTaskID, err := strconv.ParseInt(r.PathValue("taskid"), 10, 64)
 	if serveErr(&w, err) {
 		return
 	}
-
+	// Must get Task object only after task is running (otherwise buttons are wrong)
 	if database.TimedTaskIsRunning(uint(iTaskID)) {
 		serveStatusMsg(&w, http.StatusAccepted, "&#x23F9;")
 		return
@@ -26,7 +29,8 @@ func PostTime(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serveStatusMsg(&w, http.StatusCreated, "OK")
+	GetTasks(w, r)
+	GetTimes(w, r)
 }
 
 func EndTime(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +38,8 @@ func EndTime(w http.ResponseWriter, r *http.Request) {
 
 	database.FinishCurrentlyRunningTimes()
 
-	serveStatusMsg(&w, http.StatusNoContent, "OK")
+	GetTasks(w, r)
+	GetTimes(w, r)
 }
 
 func GetTimes(w http.ResponseWriter, r *http.Request) {
@@ -62,16 +67,8 @@ func GetTimes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	context := struct {
-		Label string
-		Times []database.Time
-	}{
-		Label: task.Name,
-		Times: times,
-	}
-
-	tmpl.ExecuteTemplate(w, "times_section", context)
-
+	tmpl.ExecuteTemplate(w, "times_list_section", times)
+	tmpl.ExecuteTemplate(w, "times_list_label", task.Name)
 }
 
 func DeleteTime(w http.ResponseWriter, r *http.Request) {
@@ -87,5 +84,9 @@ func DeleteTime(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serveStatusMsg(&w, http.StatusOK, "OK")
+	GetTimes(w, r)
+}
+
+func GetTimeSums(w http.ResponseWriter, r *http.Request) {
+	serveStatusMsg(&w, http.StatusNotImplemented, "not implemented")
 }

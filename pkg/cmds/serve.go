@@ -81,6 +81,8 @@ var ServeCMD cobra.Command = cobra.Command{
 		mux.HandleFunc("GET /tasks", logRequestPrefix("(GET /tasks)", globalHeaders(serve.GetTasks)))
 		mux.HandleFunc("DELETE /task/{id}", logRequestPrefix("(DELETE /task/{id})", globalHeaders(serve.DeleteTask)))
 
+		mux.HandleFunc("GET /task/{id}/sum", logRequestPrefix("(GET /task/{id}/sum)", globalHeaders(serve.GetTimeSums)))
+
 		mux.HandleFunc("POST /timer/{taskid}", logRequestPrefix("(POST /timer/{taskid})", globalHeaders(serve.PostTime)))
 		mux.HandleFunc("DELETE /timer", logRequestPrefix("(DELETE /timer)", globalHeaders(serve.EndTime)))
 		mux.HandleFunc("DELETE /timer/{taskid}", logRequestPrefix("(DELETE /timer/{taskid})", globalHeaders(serve.EndTime)))
