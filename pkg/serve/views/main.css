@@ -605,6 +605,22 @@ video {
   grid-template-columns: 1fr 0fr;
 }
 
+.grid-cols-\[20\%_80\%\] {
+  grid-template-columns: 20% 80%;
+}
+
+.grid-cols-\[10\%_90\%\] {
+  grid-template-columns: 10% 90%;
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-\[0fr_1fr\] {
+  grid-template-columns: 0fr 1fr;
+}
+
 .items-end {
   align-items: flex-end;
 }

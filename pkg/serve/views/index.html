@@ -49,21 +49,20 @@
                     >stop Timer</button>
                     <button 
                         hx-get="/times" 
-                        hx-target="#times-list-section"
-                        hx-select="#times-list-section"
-                        hx-swap="outerHTML"
-                        hx-select-oob="#times-label"
+                        hx-swap="none"
+                        hx-select-oob="#times-label,#times-list-section"
                         id="btn_show_all_times"
                         class="w-fit justify-self-end"
                     >all Tasks</button>
 
                     <button 
                         hx-get="/times/sum" 
-                        hx-target="#times-section"
+                        hx-swap="none"
+                        hx-select-oob="#times-label, #times-list-section"
                         hx-trigger="click"
                         id="btn_times_sum"
                         class="w-fit justify-self-end"
-                    >&sum;</button>
+                    >all &sum;</button>
                 </span>
             </div>
 
@@ -94,11 +93,10 @@
     <a href="#" 
         id="show_task_{{ .Id }}"
         hx-get="/times/{{ .Id }}"
-        hx-target="#times-list-section"
-        hx-swap="outerHTML"
-        hx-select="#times-list-section"
-        hx-select-oob="#times-label"
+        hx-swap="none"
+        hx-select-oob="#times-label,#times-list-section"
     >{{ .Name }}</a>
+
     <span class="text-nowrap">
         <button 
             class="btn-table-row-option"
@@ -110,8 +108,8 @@
 
         <button 
             class="btn-table-row-option"
-            hx-get="/task/{{ .Id }}/sum"
-            hx-target="#times-section"
+            hx-get="/times/sum/{{ .Id }}"
+            hx-select-oob="#times-label,#times-list-section"
             hx-swap="none"
         >&sum;</button>
 
@@ -147,6 +145,50 @@
     {{ end }}
 </h1>
 {{ end }}
+
+{{ block "times_sum_label" . }} 
+<h1 id="times-label">
+    {{ if . }}
+    Duration for Task: {{ . }}
+    {{ else }}
+    Durations:
+    {{ end }}
+</h1>
+{{ end }}
+
+{{ block "times_sum_section" . }}
+<div id="times-list-section" class=" mt-4 px-2 py-1 ">
+
+    <div id="times-sum-headers" class="
+        grid grid-cols-[10%_90%]
+        mt-4 py-1 px-2
+        group bg-gray-300
+        ">
+        <b>Task</b> <b class="m-auto">Duration</b>
+    </div>
+
+    {{ range . }}
+    <div class="times-sum-entry
+        grid grid-cols-[10%_90%]
+        mt-4 py-1 px-2
+        group hover:bg-gray-300
+    ">
+
+        <span class="time-taskname font-bold  mb-2">
+             {{ .Name }}:
+        </span>
+
+        <span class="time-duration m-auto">
+             {{ .Total }} 
+        </span>
+
+    </div>
+    {{ end }}
+
+
+</div>
+{{ end }}
+
 
 {{ block "times_list_section" . }}
 <div id="times-list-section" class=" mt-4 px-2 py-1 ">

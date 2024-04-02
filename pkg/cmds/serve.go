@@ -81,14 +81,16 @@ var ServeCMD cobra.Command = cobra.Command{
 		mux.HandleFunc("GET /tasks", logRequestPrefix("(GET /tasks)", globalHeaders(serve.GetTasks)))
 		mux.HandleFunc("DELETE /task/{id}", logRequestPrefix("(DELETE /task/{id})", globalHeaders(serve.DeleteTask)))
 
-		mux.HandleFunc("GET /task/{id}/sum", logRequestPrefix("(GET /task/{id}/sum)", globalHeaders(serve.GetTimeSums)))
-
 		mux.HandleFunc("POST /timer/{taskid}", logRequestPrefix("(POST /timer/{taskid})", globalHeaders(serve.PostTime)))
 		mux.HandleFunc("DELETE /timer", logRequestPrefix("(DELETE /timer)", globalHeaders(serve.EndTime)))
 		mux.HandleFunc("DELETE /timer/{taskid}", logRequestPrefix("(DELETE /timer/{taskid})", globalHeaders(serve.EndTime)))
-		mux.HandleFunc("GET /times/{taskid}", logRequestPrefix("(GET /times/{taskid})", globalHeaders(serve.GetTimes)))
-		mux.HandleFunc("DELETE /time/{timeid}", logRequestPrefix("(DELETE /time/{timeid})", globalHeaders(serve.DeleteTime)))
+
 		mux.HandleFunc("GET /times", logRequestPrefix("(GET /times)", globalHeaders(serve.GetTimes)))
+		mux.HandleFunc("GET /times/{taskid}", logRequestPrefix("(GET /times/{taskid})", globalHeaders(serve.GetTimes)))
+		mux.HandleFunc("GET /times/sum", logRequestPrefix("(GET /times/sum)", globalHeaders(serve.GetTimeSums)))
+		mux.HandleFunc("GET /times/sum/{taskid}", logRequestPrefix("(GET /times/sum/{taskid})", globalHeaders(serve.GetTimeSums)))
+
+		mux.HandleFunc("DELETE /time/{timeid}", logRequestPrefix("(DELETE /time/{timeid})", globalHeaders(serve.DeleteTime)))
 
 		addr := fmt.Sprintf("0.0.0.0:%d", port)
 

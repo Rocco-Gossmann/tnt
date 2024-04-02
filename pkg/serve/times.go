@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/rocco-gossmann/tnt/pkg/database"
+	"github.com/rocco-gossmann/tnt/pkg/utils"
 )
 
 func PostTime(w http.ResponseWriter, r *http.Request) {
@@ -88,5 +89,20 @@ func DeleteTime(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTimeSums(w http.ResponseWriter, r *http.Request) {
-	serveStatusMsg(&w, http.StatusNotImplemented, "not implemented")
+
+	var (
+		iTaskID int64 = 0
+		err     error
+	)
+
+	sTaskId := r.PathValue("taskid")
+	if len(sTaskId) > 0 {
+		iTaskID, err = strconv.ParseInt(sTaskId, 10, 64)
+		utils.Err(err)
+	}
+
+	sums := database.GetTimeSums(uint(iTaskID))
+
+	tmpl.ExecuteTemplate(w, "times_sum_label", nil)
+	tmpl.ExecuteTemplate(w, "times_sum_section", sums)
 }
