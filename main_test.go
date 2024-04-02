@@ -117,6 +117,15 @@ func TestEverything(test *testing.T) {
 		}
 	})
 
+	test.Run("make sure timer is not listed in sums, while it is running", func(t *testing.T) {
+		defer panicCatcher(t, "encountered error while checking for time sums")()
+
+		lst := database.GetTimeSums(0)
+		if len(lst) > 0 {
+			test.Fatal("task yelds a sum", lst, len(lst))
+		}
+	})
+
 	test.Run("stop all timers", func(t *testing.T) {
 		defer panicCatcher(t, "db issue on ending all tasks")
 		database.FinishCurrentlyRunningTimes()
@@ -129,9 +138,17 @@ func TestEverything(test *testing.T) {
 		}
 	})
 
+	test.Run("timer should now be included in sums", func(t *testing.T) {
+		defer panicCatcher(t, "encountered error while checking for time sums")()
+
+		lst := database.GetTimeSums(0)
+		if len(lst) == 0 {
+			test.Fatal("task did not yeld a sum")
+		}
+	})
+
 	test.Cleanup(func() {
 		database.DeInitDB()
 		os.Remove(DB_FILE)
 	})
-
 }

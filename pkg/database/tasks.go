@@ -21,6 +21,11 @@ type Task struct {
 	Active bool
 }
 
+type TimeSum struct {
+	Name  string
+	Total string
+}
+
 type TaskList []Task
 
 // GetTaskList returns a slice of all Tasknames currently registered
@@ -184,6 +189,55 @@ func DropTask(taskId uint) (int64, error) {
 	}
 
 	return rows, nil
+}
+
+func GetTimeSums(iTaskId uint) []TimeSum {
+
+	taskWHERE := ""
+	iSizeLimit := 0
+
+	if iTaskId > 0 {
+		taskWHERE = fmt.Sprintf(" AND taskId = %d ", iTaskId)
+		iSizeLimit = 1
+	}
+
+	// if no taskFilter is applyed
+	// => Count potential results, to define slice size
+	if iSizeLimit == 0 {
+		res, err := QueryStatement(
+			"SELECT COUNT(DISTINCT taskId) FROM times",
+		)
+		utils.Err(err)
+
+		if res.Next() {
+			err = res.Scan(&iSizeLimit)
+			utils.Err(err)
+		}
+		res.Close()
+	}
+
+	res, err := QueryStatement(`
+		SELECT 
+			ta.name, 
+			time(sum(unixepoch(ti.end) - unixepoch(ti.start)), "unixepoch") total
+		FROM times ti 
+			LEFT JOIN tasks ta ON ti.taskId = ta.id
+		WHERE end IS NOT NULL` + taskWHERE + ` GROUP by taskId
+	`)
+	utils.Err(err)
+
+	// Create the new Slice
+	sums := make([]TimeSum, 0, iSizeLimit)
+	for res.Next() {
+		var timeSum TimeSum
+		err = res.Scan(&timeSum.Name, &timeSum.Total)
+		utils.Err(err)
+
+		sums = append(sums, timeSum)
+	}
+	res.Close()
+
+	return sums
 }
 
 // converts the given Task into a normaized version, to help avoid putting in mutlipe tasks
