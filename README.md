@@ -173,7 +173,8 @@ After that, is your Task-List.
 ![Task List](./docs/img/snap_task_list.png)
 
 ![Task remove Btn](./docs/img/snap_task_rm.png) The Cross-button removes a Task and all its recorded times from the List.  
-![Task play Btn](./docs/img/snap_task_play.png) The Play-button starts a new Timer for that Task.
+![Task play Btn](./docs/img/snap_task_play.png) The Play-button starts a new Timer for that Task.  
+![Task Sum Btn](./docs/img/snap_task_sum.png) Shows the total time you spend in that task.
 
 >[!info]
 Starting a new Timer will automatically finish the previous running Timer.
@@ -184,10 +185,10 @@ Below that, you have the Times section.
 You can click on a Tasks name to filter the times for that Task.  
 ![Times Filtered](./docs/img/snap_times_filtered.png)
 
-![all Tasks](./docs/img/snap_all_tasks.png) Shows the times for all Tasks  
 ![stop Timer](./docs/img/snap_stop.png)  stops what ever timer is crently running.  
+![all Tasks](./docs/img/snap_all_tasks.png) Shows the times for all Tasks  
+![all Sums](./docs/img/snap_all_sums.png) Shows the Summed times per Task for all Tasks.  
 ![Time remove Btn](./docs/img/snap_task_rm.png) As with the Tasks, the Cross button next to a Time, removes that time. 
-
 
 
 
