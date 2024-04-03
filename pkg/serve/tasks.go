@@ -48,11 +48,7 @@ func PostTask(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	t, err := database.GetTaskByName(taskName)
-	if !serveErr(&w, err) {
-		tmpl.ExecuteTemplate(w, "task_list", t)
-	}
-
+	GetTasks(w, r)
 }
 
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +63,8 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 
 		if rows > 0 {
 			log.Println("deleted rows:", rows)
-			w.WriteHeader(http.StatusOK)
+
+			GetTimes(w, r)
 
 		} else {
 			log.Println("did not delete any rows")
