@@ -6,7 +6,7 @@ H1 {
   @apply font-bold text-lg;
 }
 
-BUTTON {
+.btn {
   @apply bg-gray-300
     border-[2px] 
     rounded-[.5rem] 
@@ -30,3 +30,28 @@ INPUT {
     w-[12mm]
   ;
 }
+
+.expand-frame {
+  --transition-time: 1s ease-out;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--transition-time);
+
+  overflow: hidden;
+}
+
+.expand-frame.expand-open {
+  grid-template-rows: 1fr;
+}
+
+.expand-frame > .expand-content {
+  min-height: 0px;
+  visibility: hidden;
+  transition: visibility var(--transition-time), margin-top var(--transition-time); 
+}
+
+.expand-frame.expand-open > .expand-content {
+  visibility: visible;
+  @apply mt-4;
+}
+
