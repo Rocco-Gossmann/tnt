@@ -1,14 +1,6 @@
-data.db
+*.sqlite
+*.db
 tnt
-tnt.linux.arm64
-tnt.linux.x64
-tnt.mac.arm64
-tnt.mac.x64
-tnt.windows.x32.exe
-tnt.windows.x64.exe
+
 tnt.linux.x86_64
-tnt.mac.x86_64
-tnt.windows.arm64.exe
-tnt.windows.x86_64.exe
-tnt.win.x64.exe
 tnt.win.x86_64.exe
