@@ -25,7 +25,7 @@ I had a lot of "Project-Hopping" to do lately, and can barely keep track of what
 This tool is meant to make things easier by documenting when and how long certain Tasks have been executed.
 
 # installation
-- grab one of the Binaries from the [Releases - Section](https://github.com/Rocco-Gossmann/tnt/releases/latest)
+- grab one of the binaries from the [Releases - Section](https://github.com/Rocco-Gossmann/tnt/releases/latest)
 - rename it to `tnt` (for Linux/Unix) or `tnt.exe` (for Windows)
 - put it into a directory that is listed in your $PATH or %PATH%
 - setup the Autocompletion as described further down in [Autocompletion](#shell---autocompletion)
@@ -38,7 +38,7 @@ Should your system not be covered by the precompiled binaries, please use the
 build guide further down [Build it yourself](#build-it-yourself)
 
 Likewise, this README also covers features not yet present in the [Releases - Section](https://github.com/Rocco-Gossmann/tnt/releases/latest).
-When using a pre-build releas, always refere to the README.md of the release  
+When using a pre-build release, always refere to the README.md of the release  
 (in v1.3.1 or smaller, this must be extracted from the `Source Code.zip` / `Source Code.tar.gz` file)
 
 
@@ -253,7 +253,7 @@ echo "export PATH=\"`pwd`:\$PATH\"" >> ~/.zshrc
 ```
 
 Should you want to change anything regarding the Web-Interface, 
-please use the [Tailwind-CLI](https://github.com/tailwindlabs/tailwindcss/releases/latest) for that.
+please use the [Tailwind-CLI](https://github.com/tailwindlabs/tailwindcss/releases/latest) to compile the `main.tw.css` to into the `main.css`.
  
 call
 ```bash
