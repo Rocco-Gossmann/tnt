@@ -184,7 +184,7 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 			FROM times ti
 			LEFT JOIN tasks ta ON ti.taskId = ta.id
 			` + taskWhere + `
-			ORDER BY start DESC;
+			ORDER BY start ASC;
 		`)
 
 	if err != nil {
