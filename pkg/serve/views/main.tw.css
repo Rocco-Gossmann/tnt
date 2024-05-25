@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 H1 {
-  @apply font-bold text-lg;
+  @apply font-bold text-lg inline;
+}
+
+SUMMARY {
+  @apply cursor-pointer;
 }
 
 .btn {

@@ -1,46 +1,32 @@
 {{ block "index" . }}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <script type="text/javascript" src="./htmx.js" ></script>
-        <link rel="stylesheet" href="./main.css" >
-    </head>
 
-    <body class="p-2 max-w-6xl m-auto xl:shadow-xl xl:shadow-gray-400 xl:min-h-[100vh]">
+<head>
+    <script type="text/javascript" src="./htmx.js"></script>
+    <link rel="stylesheet" href="./main.css">
+</head>
 
+<body class="p-2 max-w-6xl m-auto xl:shadow-xl xl:shadow-gray-400 xl:min-h-[100vh]">
+
+    <details open>
+        <summary> <h1> Tasks: </h1> </summary>
         <header class="grid grid-cols-[1fr_0fr]">
-            <h1> Tasks: </h1>
-
             <div class="flex gap-2">
-                <button 
-                    id="btn_reload_tasks"
-                    title="Reload Tasks"
-                    hx-get="/tasks" 
-                    hx-target="#task-list" 
-                    class="btn text-[1.5rem]"
-                >&#10226;</button>
+                <button id="btn_reload_tasks" title="Reload Tasks" hx-get="/tasks" hx-target="#task-list"
+                    class="btn text-[1.5rem]">&#10226;</button>
 
-                <button 
-                    onclick=" taskAddFrm.classList.toggle('expand-open'); "
-                    class="btn text-[1.5rem]"
-                    >&#10010;</button>
+                <button onclick=" taskAddFrm.classList.toggle('expand-open'); "
+                    class="btn text-[1.5rem]">&#10010;</button>
 
             </div>
         </header>
 
         <section id="tasks-section">
 
-            <div id="taskAddFrm" 
-                 class="expand-frame mb-4" 
-                 style="--transition-time: .25s"
-            >
-                <form 
-                    hx-post="/task" 
-                    hx-target="#task-list" 
-                    hx-swap="outerHTML" 
-                    hx-on::xhr:loadend="this.taskname.value=''"
-                    class="expand-content grid grid-cols-[1fr_0fr] gap-1"
-                >
+            <div id="taskAddFrm" class="expand-frame mb-4" style="--transition-time: .25s">
+                <form hx-post="/task" hx-target="#task-list" hx-swap="outerHTML"
+                    hx-on::xhr:loadend="this.taskname.value=''" class="expand-content grid grid-cols-[1fr_0fr] gap-1">
                     <input type="text" name="taskname" id="inp_new_task_text" />
                     <button class="btn text-nowrap" type="submit"> + add to list</button>
                 </form>
@@ -49,44 +35,36 @@
             {{ template "task_list_section" .Tasks }}
 
         </section>
+    </details>
+
+    <details class="mt-4">
+
+        <summary><h1>Times</h1></summary>
 
         <section id="times-section">
+            {{ template "times_list_label" .Label }}
 
-            <div class="grid grid-cols-[1fr_0fr] mt-12"> 
+            <div class="grid grid-cols-[1fr_0fr] mt-12">
 
-                {{ template "times_list_label" .Label }}
 
                 <span class="text-nowrap gap-4 flex">
 
-                    <button 
-                        class="btn inline-block group-hover:bg-white"
-                        hx-delete="/timer"
-                        hx-swap="none"
-                        hx-select-oob="#times-label,#times-list-section,#task-list"
-                    >stop Timer</button>
-                    <button 
-                        hx-get="/times" 
-                        hx-swap="none"
-                        hx-select-oob="#times-label,#times-list-section"
-                        id="btn_show_all_times"
-                        class="btn w-fit justify-self-end"
-                    >all Tasks</button>
+                    <button class="btn inline-block group-hover:bg-white" hx-delete="/timer" hx-swap="none"
+                        hx-select-oob="#times-label,#times-list-section,#task-list">stop Timer</button>
+                    <button hx-get="/times" hx-swap="none" hx-select-oob="#times-label,#times-list-section"
+                        id="btn_show_all_times" class="btn w-fit justify-self-end">all Tasks</button>
 
-                    <button 
-                        hx-get="/times/sum" 
-                        hx-swap="none"
-                        hx-select-oob="#times-label, #times-list-section"
-                        hx-trigger="click"
-                        id="btn_times_sum"
-                        class="btn w-fit justify-self-end"
-                    >all &sum;</button>
+                    <button hx-get="/times/sum" hx-swap="none" hx-select-oob="#times-label, #times-list-section"
+                        hx-trigger="click" id="btn_times_sum" class="btn w-fit justify-self-end">all &sum;</button>
                 </span>
             </div>
 
             {{ template "times_list_section" .Times }}
 
         </section>
-    </body>
+    </details>
+</body>
+
 </html>
 {{ end }}
 
@@ -94,7 +72,7 @@
 {{ block "task_list_section" . }}
 <div id="task-list">
     {{ range . }}
-        {{ template "task_list_entry" . }}
+    {{ template "task_list_entry" . }}
     {{ end }}
 </div>
 {{ end }}
@@ -105,50 +83,25 @@
     border-b border-b-gray-300 
     px-2 py-1 
     grid grid-cols-[1fr_0fr] items-end 
-    group hover:bg-gray-300"
->
-    <a href="#" 
-        id="show_task_{{ .Id }}"
-        hx-get="/times/{{ .Id }}"
-        hx-swap="none"
-        hx-select-oob="#times-label,#times-list-section"
-    >{{ .Name }}</a>
+    group hover:bg-gray-300">
+    <a href="#" id="show_task_{{ .Id }}" hx-get="/times/{{ .Id }}" hx-swap="none"
+        hx-select-oob="#times-label,#times-list-section">{{ .Name }}</a>
 
     <span class="text-nowrap">
-        <button 
-            class="btn btn-table-row-option"
-            hx-confirm="Do you want to delete this task and all its times?"
-            hx-delete="/task/{{ .Id }}"
+        <button class="btn btn-table-row-option" hx-confirm="Do you want to delete this task and all its times?"
+            hx-delete="/task/{{ .Id }}" hx-target="#task-entry-{{ .Id }}" hx-swap="delete"
+            hx-select-oob="#times-label,#times-list-section">&times;</button>
 
-            hx-target="#task-entry-{{ .Id }}"
-            hx-swap="delete"
-
-            hx-select-oob="#times-label,#times-list-section"
-        >&times;</button>
-
-        <button 
-            class="btn btn-table-row-option"
-            hx-get="/times/sum/{{ .Id }}"
-            hx-select-oob="#times-label,#times-list-section"
-            hx-swap="none"
-        >&sum;</button>
+        <button class="btn btn-table-row-option" hx-get="/times/sum/{{ .Id }}"
+            hx-select-oob="#times-label,#times-list-section" hx-swap="none">&sum;</button>
 
         {{ if .Active }}
-            <button 
-                id="tasks-{{ .Id }}-timerbtn"
-                class="btn btn-table-row-option font-[initial]"
-                hx-delete="/timer/{{ .Id }}"
-                hx-swap="none"
-                hx-select-oob="#times-label,#times-list-section,#task-list"
-            >&#x23F9;</button>
-            {{ else }}
-            <button 
-                id="tasks-{{ .Id }}-timerbtn"
-                class="btn btn-table-row-option font-[initial]"
-                hx-post="/timer/{{ .Id }}"
-                hx-swap="none"
-                hx-select-oob="#times-label,#times-list-section,#task-list"
-            >&#x23F5</button>
+        <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial]"
+            hx-delete="/timer/{{ .Id }}" hx-swap="none"
+            hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F9;</button>
+        {{ else }}
+        <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial]" hx-post="/timer/{{ .Id }}"
+            hx-swap="none" hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F5</button>
         {{ end }}
 
     </span>
@@ -156,17 +109,15 @@
 {{ end }}
 
 
-{{ block "times_list_label" . }} 
+{{ block "times_list_label" . }}
 <h1 id="times-label">
     {{ if . }}
-    Times for Task: {{ . }}
-    {{ else }}
-    Times:
+    for Task: {{ . }}
     {{ end }}
 </h1>
 {{ end }}
 
-{{ block "times_sum_label" . }} 
+{{ block "times_sum_label" . }}
 <h1 id="times-label">
     Durations:
 </h1>
@@ -191,11 +142,11 @@
     ">
 
         <span class="time-taskname font-bold  mb-2">
-             {{ .Name }}:
+            {{ .Name }}:
         </span>
 
         <span class="time-duration m-auto">
-             {{ .Total }} 
+            {{ .Total }}
         </span>
 
     </div>
@@ -215,7 +166,7 @@
         md:grid md:grid-cols-[20%_25%_25%_18%_12%]
         mt-4 py-1 px-2
         group bg-gray-300
-        ">
+    ">
         <b>Task</b>
         <b class="m-auto">Start</b>
         <b class="m-auto">End</b>
@@ -230,25 +181,19 @@
         group hover:bg-gray-300
         ">
         <span class="sm:col-span-2  md:col-span-1 time-taskname font-bold md:font-normal mb-2 md:mb-0"
-            hx-get="/times/{{ .Id }}"
-            hx-target="#times-section"
-        > {{ .TaskName }}</span>
+            hx-get="/times/{{ .Id }}" hx-target="#times-section"> {{ .TaskName }}</span>
         <span class="time-starttime md:m-auto"><b class="md:hidden">Start:</b> {{ .Start }}</span>
         <span class="time-endtime md:m-auto"><b class="md:hidden">End:</b> {{ .End }}</span>
-        <span class="time-duration md:m-auto">{{ if .Duration }}<b class="md:hidden">Duration:</b> {{ .Duration }}{{ end }}</span>
+        <span class="time-duration md:m-auto">{{ if .Duration }}<b class="md:hidden">Duration:</b> {{ .Duration }}{{ end
+            }}</span>
 
         <span class="text-right">
-            <button 
-                class="btn aspect-square group-hover:bg-white w-[12mm]"
-                hx-delete="/time/{{ .Id }}"
-                hx-confirm="Do you want to delete this time?"
-                hx-target="#times-entry-{{ .Id }}"
-                hx-swap="delete"
-            >&times;</button>
+            <button class="btn aspect-square group-hover:bg-white w-[12mm]" hx-delete="/time/{{ .Id }}"
+                hx-confirm="Do you want to delete this time?" hx-target="#times-entry-{{ .Id }}"
+                hx-swap="delete">&times;</button>
         </span>
     </div>
     {{ end }}
 
 </div>
 {{ end }}
-
