@@ -14,8 +14,12 @@ BUILDDIR:= .
 # ==============================================================================
 # Recipes
 # ==============================================================================
+#
+GOSOURCE:=$(shell find $(DIRSRC) -name "*.go")
 
-$(BUILDDIR)/tnt: main.go
+
+
+$(BUILDDIR)/tnt: $(GOSOURCE) 
 	$(BUILDCMD) -ldflags="-X main.Version=$(DEVVERSION)" -o $@
 
 tnt.win.x86_64.exe: main.go
