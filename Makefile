@@ -14,12 +14,9 @@ BUILDDIR:= .
 # ==============================================================================
 # Recipes
 # ==============================================================================
-#
-GOSOURCE:=$(shell find $(DIRSRC) -name "*.go")
+GOSOURCE:=$(shell find . -name "*.go")
 
-
-
-$(BUILDDIR)/tnt: $(GOSOURCE) 
+$(BUILDDIR)/tnt: $(GOSOURCE)
 	$(BUILDCMD) -ldflags="-X main.Version=$(DEVVERSION)" -o $@
 
 tnt.win.x86_64.exe: main.go
@@ -51,7 +48,7 @@ serve:
 	find . -type f -iname "*.go" -o -iname "*.html" -o -iname "*.css" | entr make server
 
 test:
-	find . -type f -name "*.go" | entr make tst 
+	find . -type f -name "*.go" | entr make tst
 
 tst:
 	clear
@@ -65,12 +62,12 @@ server:
 	make tnt
 	./tnt serve --db ./devdb.sqlite --debug &
 
-remake: 
+remake:
 	clear
 	rm -f ./tnt
 	make tnt
-	
+
 clean:
-	rm -rf $(BUILDDIR)/tnt	
+	rm -rf $(BUILDDIR)/tnt
 	rm -rf $(BUILDDIR)/tnt.win.x86_64.exe
 	rm -rf $(BUILDDIR)/tnt.linux.x86_64
