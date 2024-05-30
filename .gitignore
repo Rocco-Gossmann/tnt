@@ -12,3 +12,5 @@ tnt.windows.arm64.exe
 tnt.windows.x86_64.exe
 tnt.win.x64.exe
 tnt.win.x86_64.exe
+debug.run
+.vscode
