@@ -40,6 +40,8 @@ func GetTaskList() (ret []Task, err error) {
 			(SELECT COUNT(*) FROM times ti WHERE ti.taskId=ta.id AND ti.End IS NULL) active
 		FROM 
 			tasks ta
+		ORDER BY
+			ta.name ASC
 	`)
 	if err != nil {
 		return
@@ -219,7 +221,7 @@ func GetTimeSums(iTaskId uint) []TimeSum {
 	res, err := QueryStatement(`
 		SELECT 
 			ta.name, 
-			time(sum(unixepoch(ti.end) - unixepoch(ti.start)), "unixepoch") total
+			sum(unixepoch(ti.end) - unixepoch(ti.start)) total
 		FROM times ti 
 			LEFT JOIN tasks ta ON ti.taskId = ta.id
 		WHERE end IS NOT NULL` + taskWHERE + ` GROUP by taskId
@@ -230,8 +232,11 @@ func GetTimeSums(iTaskId uint) []TimeSum {
 	sums := make([]TimeSum, 0, iSizeLimit)
 	for res.Next() {
 		var timeSum TimeSum
-		err = res.Scan(&timeSum.Name, &timeSum.Total)
+		var secondCount float64
+		err = res.Scan(&timeSum.Name, &secondCount)
 		utils.Err(err)
+
+		timeSum.Total = utils.SecToTimePrint(secondCount)
 
 		sums = append(sums, timeSum)
 	}

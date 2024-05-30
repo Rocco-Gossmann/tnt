@@ -71,6 +71,11 @@ var ServeCMD cobra.Command = cobra.Command{
 			utils.Failf("serve error: %s", err)
 		}
 
+		url, err := cmd.Flags().GetString("url")
+		if err != nil {
+			utils.Failf("serve error: %s", err)
+		}
+
 		mux := http.NewServeMux()
 
 		mux.HandleFunc("GET /", logRequestPrefix("(GET /)", globalHeaders(serve.GetIndex)))
@@ -92,7 +97,9 @@ var ServeCMD cobra.Command = cobra.Command{
 
 		mux.HandleFunc("DELETE /time/{timeid}", logRequestPrefix("(DELETE /time/{timeid})", globalHeaders(serve.DeleteTime)))
 
-		addr := fmt.Sprintf("0.0.0.0:%d", port)
+		mux.HandleFunc("GET /time/edit/{timeid}", logRequestPrefix("(GET /time/edit/{timeid})", globalHeaders(serve.GetTimeEdit)))
+
+		addr := fmt.Sprintf("%s:%d", url, port)
 
 		server := http.Server{
 			Addr:    addr,
@@ -123,6 +130,7 @@ var ServeCMD cobra.Command = cobra.Command{
 
 func init() {
 	ServeCMD.Flags().Uint32P("port", "p", 7353, "the port on which to serve the Web-Interface")
+	ServeCMD.Flags().StringP("url", "u", "0.0.0.0", "the host adress on which to host the UI-Server")
 	ServeCMD.Flags().BoolP("open", "o", false, "try to open the interface in your browser")
 
 }

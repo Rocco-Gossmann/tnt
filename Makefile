@@ -14,8 +14,12 @@ BUILDDIR:= .
 # ==============================================================================
 # Recipes
 # ==============================================================================
+#
+GOSOURCE:=$(shell find $(DIRSRC) -name "*.go")
 
-$(BUILDDIR)/tnt: main.go
+
+
+$(BUILDDIR)/tnt: $(GOSOURCE) 
 	$(BUILDCMD) -ldflags="-X main.Version=$(DEVVERSION)" -o $@
 
 tnt.win.x86_64.exe: main.go
@@ -23,7 +27,6 @@ tnt.win.x86_64.exe: main.go
 
 tnt.linux.x86_64: main.go
 	GOOS=linux GOARCH=amd64 CC="zig cc -target x86_64-linux" CXX="zig c++ -target x86_64-linux" $(BUILDCMD) -ldflags="-w -X main.Version=$(VERSION)" -o $@
-	
 
 setup: go.sum
 	@echo "setup done"
@@ -32,13 +35,11 @@ go.sum: go.mod
 	GOPRIVATE="github.com/rocco-gossmann" go mod tidy
 
 
+
 .phony: clean remake dev all test tst all serve server css
 
 all: tnt.win.x86_64.exe tnt.linux.x86_64
 	echo "done"
-
-
-
 
 dev:
 	find . -type f -name "*.go" | entr make remake
@@ -62,7 +63,7 @@ server:
 	rm -f ./tnt
 	make css
 	make tnt
-	./tnt serve --debug &
+	./tnt serve --db ./devdb.sqlite --debug &
 
 remake: 
 	clear

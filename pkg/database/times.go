@@ -110,7 +110,7 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 				ti.id, 
 				ti.start, 
 				ti.end, 
-				time(unixepoch(ti.end) - unixepoch(ti.start), "unixepoch") duration,
+				unixepoch(ti.end) - unixepoch(ti.start) duration,
 				ti.taskId,
 				ta.name
 			FROM times ti
@@ -124,13 +124,15 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 	}
 
 	var (
-		id, tid    uint
-		s, e, d, n sql.NullString
+		id, tid  uint
+		s, e, n  sql.NullString
+		d        string
+		duration sql.NullFloat64
 	)
 
 	for res.Next() {
 
-		err := res.Scan(&id, &s, &e, &d, &tid, &n)
+		err := res.Scan(&id, &s, &e, &duration, &tid, &n)
 
 		log.Println(id, s, e, d, tid, n)
 
@@ -142,8 +144,8 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 			e.String = "** running **"
 		}
 
-		if !d.Valid {
-			d.String = ""
+		if !duration.Valid {
+			duration.Float64 = 0.00
 		}
 
 		if !n.Valid {
@@ -154,11 +156,13 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 			return nil, err
 		}
 
+		d = utils.SecToTimePrint(duration.Float64)
+
 		ret = append(ret, Time{
 			Id:       id,
 			Start:    s.String,
 			End:      e.String,
-			Duration: d.String,
+			Duration: d,
 			TaskId:   tid,
 			TaskName: n.String,
 		})
@@ -184,7 +188,7 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 			FROM times ti
 			LEFT JOIN tasks ta ON ti.taskId = ta.id
 			` + taskWhere + `
-			ORDER BY start DESC;
+			ORDER BY start ASC;
 		`)
 
 	if err != nil {
