@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/rocco-gossmann/tnt/pkg/database"
 	"github.com/rocco-gossmann/tnt/pkg/utils"
@@ -107,9 +108,16 @@ func GetTimeSums(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "times_sum_section", sums)
 }
 
+type cTimeEditTime struct {
+	Id                   uint
+	Task                 string
+	Duration             string
+	StartDate, StartTime string
+	EndDate, EndTime     string
+}
+
 func GetTimeEdit(w http.ResponseWriter, r *http.Request) {
 	iTimeID, err := strconv.ParseInt(r.PathValue("timeid"), 10, 64)
-
 	if serveErr(&w, err) {
 		return
 	}
@@ -119,13 +127,38 @@ func GetTimeEdit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Init TimeEdit
+	//==============================================================================
+	var oTimeEdit cTimeEditTime
+	oTimeEdit.Id = oTime.Id
+	oTimeEdit.Task = oTime.Task
+
+	// Duration
+	//==============================================================================
 	iDur, err := strconv.ParseFloat(oTime.Duration, 10)
 	if serveErr(&w, err) {
 		return
 	}
+	oTimeEdit.Duration = utils.SecToTimePrint(iDur)
 
-	oTime.Duration = utils.SecToTimePrint(iDur)
+	// StartTime
+	//==============================================================================
+	t, err := time.Parse(utils.SQL_OUTPUT_DATETIMEFORMAT, oTime.Start)
+	if serveErr(&w, err) {
+		return
+	}
+	oTimeEdit.StartDate = t.Format("2006-01-02")
+	oTimeEdit.StartTime = t.Format("15:04:05")
 
-	tmpl.ExecuteTemplate(w, "time_edit_row", oTime)
+	// EndTime
+	//==============================================================================
+	t, err = time.Parse(utils.SQL_OUTPUT_DATETIMEFORMAT, oTime.End)
+	if serveErr(&w, err) {
+		return
+	}
+	oTimeEdit.EndDate = t.Format("2006-01-02")
+	oTimeEdit.EndTime = t.Format("15:04:05")
+
+	tmpl.ExecuteTemplate(w, "time_edit_row", oTimeEdit)
 
 }

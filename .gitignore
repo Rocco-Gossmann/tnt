@@ -6,3 +6,4 @@ tnt.linux.x86_64
 tnt.win.x86_64.exe
 debug.run
 .vscode
+pkg/.DS_Store

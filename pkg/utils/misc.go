@@ -6,6 +6,7 @@ import (
 )
 
 const SQL_DATETIME_FORMAT = "2006-01-02 15:04:05"
+const SQL_OUTPUT_DATETIMEFORMAT = "2006-01-02T15:04:05Z"
 
 func Suffix(cnt int, singular string, plural string) string {
 	ret := plural

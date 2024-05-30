@@ -80,9 +80,9 @@
 
 {{ block "task_list_entry" . }}
 <div id="task-entry-{{ .Id }}" class="
-    border-b border-b-gray-300 
-    px-2 py-1 
-    grid grid-cols-[1fr_0fr] items-end 
+    border-b border-b-gray-300
+    px-2 py-1
+    grid grid-cols-[1fr_0fr] items-end
     group hover:bg-gray-300">
     <a href="#" id="show_task_{{ .Id }}" hx-get="/times/{{ .Id }}" hx-swap="none"
         hx-select-oob="#times-label,#times-list-section">{{ .Name }}</a>
@@ -175,7 +175,7 @@
 
     {{ range . }}
     <div id="times-entry-{{ .Id }}" class="
-        grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[20%_25%_25%_18%_12%] 
+        grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[20%_25%_25%_18%_12%]
         mt-4 py-1 px-2
         group hover:bg-gray-300
         ">
@@ -192,9 +192,9 @@
                 hx-target="#times-entry-{{ .Id }}"
                 hx-swap="outerHTML"
             > edit </button>
-            <button class="btn aspect-square group-hover:bg-white w-[12mm]" 
+            <button class="btn aspect-square group-hover:bg-white w-[12mm]"
                 hx-delete="/time/{{ .Id }}"
-                hx-confirm="Do you want to delete this time?" 
+                hx-confirm="Do you want to delete this time?"
                 hx-target="#times-entry-{{ .Id }}"
                 hx-swap="delete"
             >&times;</button>
@@ -207,7 +207,7 @@
 
 {{ block "time_edit_row" . }}
     <form id="times-entry-{{ .Id }}" class="
-        grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[20%_25%_25%_18%_12%] 
+        grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[20%_25%_25%_18%_12%]
         mt-4 py-1 px-2
         group hover:bg-gray-300"
         hx-post="/times/edit/{{ .Id }}"
@@ -219,15 +219,15 @@
         </span>
 
         <span class="time-starttime md:m-auto">
-            <b class="md:hidden">Start:</b> 
-            <input type="date" name="startdate" value="" />
-            <input type="time" name="starttime" value="" />
+            <b class="md:hidden">Start:</b>
+            <input type="date" name="startdate" value="{{ .StartDate }}" />
+            <input type="time" name="starttime" value="{{ .StartTime }}" />
         </span>
 
         <span class="time-endtime md:m-auto">
-            <b class="md:hidden">End:</b> 
-            <input type="date" name="enddate" value="" />
-            <input type="time" name="endtime" value="" />
+            <b class="md:hidden">End:</b>
+            <input type="date" name="enddate" value="{{ .EndDate }}" />
+            <input type="time" name="endtime" value="{{ .EndTime }}" />
         </span>
 
         <span class="time-duration md:m-auto">
@@ -237,9 +237,9 @@
         </span>
 
         <span class="text-right">
-            <button class="btn group-hover:bg-white w-[12mm]" 
-                type="submit" 
-                name="save" 
+            <button class="btn group-hover:bg-white w-[12mm]"
+                type="submit"
+                name="save"
                 value="save"
             >Save</button>
         </span>
