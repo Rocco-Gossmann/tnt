@@ -106,3 +106,26 @@ func GetTimeSums(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "times_sum_label", nil)
 	tmpl.ExecuteTemplate(w, "times_sum_section", sums)
 }
+
+func GetTimeEdit(w http.ResponseWriter, r *http.Request) {
+	iTimeID, err := strconv.ParseInt(r.PathValue("timeid"), 10, 64)
+
+	if serveErr(&w, err) {
+		return
+	}
+
+	oTime, err := database.GetTimeByID(uint(iTimeID))
+	if serveErr(&w, err) {
+		return
+	}
+
+	iDur, err := strconv.ParseFloat(oTime.Duration, 10)
+	if serveErr(&w, err) {
+		return
+	}
+
+	oTime.Duration = utils.SecToTimePrint(iDur)
+
+	tmpl.ExecuteTemplate(w, "time_edit_row", oTime)
+
+}

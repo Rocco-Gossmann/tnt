@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -33,6 +34,7 @@ type Time struct {
 }
 
 type TimeDS struct {
+	Id       uint
 	Task     string
 	Start    string
 	End      string
@@ -222,4 +224,48 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 func DeleteTime(iTimeId uint) error {
 	_, err := ExecStatement("DELETE FROM times WHERE id=?", iTimeId)
 	return err
+}
+
+func GetTimeByID(iTimeId uint) (ds TimeDS, err error) {
+
+	str := fmt.Sprintf(`
+			SELECT 
+				ti.id,
+				ta.name, 
+				ti.start, 
+				ti.end, 
+				unixepoch(ti.end) - unixepoch(ti.start) duration
+			FROM times ti
+			LEFT JOIN tasks ta ON ti.taskId = ta.id
+			WHERE ti.id=%d
+			ORDER BY start ASC;
+		`, iTimeId)
+
+	log.Print("query: ", str)
+
+	res, err := QueryStatement(str)
+
+	if err != nil {
+		return
+	}
+
+	if res.Next() {
+		var name, total, start, end sql.NullString
+		var id sql.NullInt64
+
+		err = res.Scan(&id, &name, &start, &end, &total)
+		utils.Err(err)
+
+		ds.Id = iTimeId
+		ds.Task = name.String
+		ds.Start = start.String
+		ds.End = end.String
+		ds.Duration = total.String
+
+	} else {
+		err = errors.New("time not found")
+
+	}
+
+	return
 }
