@@ -1,8 +1,10 @@
 package serve
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -116,27 +118,28 @@ type cTimeEditTime struct {
 	EndDate, EndTime     string
 }
 
-func GetTimeEdit(w http.ResponseWriter, r *http.Request) {
-	iTimeID, err := strconv.ParseInt(r.PathValue("timeid"), 10, 64)
-	if serveErr(&w, err) {
-		return
-	}
+func getEditTimeByPathValue(r *http.Request, pathValue string) (iTimeID int64, oTimeEdit cTimeEditTime, err error) {
 
-	oTime, err := database.GetTimeByID(uint(iTimeID))
-	if serveErr(&w, err) {
+	var oTime database.TimeDS
+	iTimeID, err = strconv.ParseInt(r.PathValue(pathValue), 10, 64)
+	if err == nil {
+		oTime, err = database.GetTimeByID(uint(iTimeID))
+		if err != nil {
+			return
+		}
+	} else {
 		return
 	}
 
 	// Init TimeEdit
 	//==============================================================================
-	var oTimeEdit cTimeEditTime
 	oTimeEdit.Id = oTime.Id
 	oTimeEdit.Task = oTime.Task
 
 	// Duration
 	//==============================================================================
 	iDur, err := strconv.ParseFloat(oTime.Duration, 10)
-	if serveErr(&w, err) {
+	if err != nil {
 		return
 	}
 	oTimeEdit.Duration = utils.SecToTimePrint(iDur)
@@ -144,21 +147,78 @@ func GetTimeEdit(w http.ResponseWriter, r *http.Request) {
 	// StartTime
 	//==============================================================================
 	t, err := time.Parse(utils.SQL_OUTPUT_DATETIMEFORMAT, oTime.Start)
-	if serveErr(&w, err) {
+	if err != nil {
 		return
 	}
 	oTimeEdit.StartDate = t.Format("2006-01-02")
-	oTimeEdit.StartTime = t.Format("15:04:05")
+	oTimeEdit.StartTime = t.Format("15:04")
 
 	// EndTime
 	//==============================================================================
 	t, err = time.Parse(utils.SQL_OUTPUT_DATETIMEFORMAT, oTime.End)
-	if serveErr(&w, err) {
+	if err != nil {
 		return
 	}
 	oTimeEdit.EndDate = t.Format("2006-01-02")
-	oTimeEdit.EndTime = t.Format("15:04:05")
+	oTimeEdit.EndTime = t.Format("15:04")
+
+	return
+}
+
+func GetTimeEdit(w http.ResponseWriter, r *http.Request) {
+
+	_, oTimeEdit, err := getEditTimeByPathValue(r, "timeid")
+	if serveErr(&w, err) {
+		return
+	}
 
 	tmpl.ExecuteTemplate(w, "time_edit_row", oTimeEdit)
 
+}
+
+func readTimeEditFieldFromBody(u url.Values, field string, fallback string) string {
+	if u.Has(field) {
+		return u.Get(field)
+	} else {
+		return fallback
+	}
+}
+
+func PostTimeEdit(w http.ResponseWriter, r *http.Request) {
+
+	iTimeId, oTimeEdit, err := getEditTimeByPathValue(r, "timeid")
+	if serveErr(&w, err) {
+		return
+	}
+
+	err = r.ParseForm()
+	if serveErr(&w, err) {
+		return
+	}
+
+	body := r.Form
+	log.Println("hit", body)
+
+	oTimeEdit.StartDate = readTimeEditFieldFromBody(body, "startdate", oTimeEdit.StartDate)
+	oTimeEdit.StartTime = readTimeEditFieldFromBody(body, "starttime", oTimeEdit.StartTime)
+	oTimeEdit.EndDate = readTimeEditFieldFromBody(body, "enddate", oTimeEdit.EndDate)
+	oTimeEdit.EndTime = readTimeEditFieldFromBody(body, "endtime", oTimeEdit.EndTime)
+
+	oStartTime, err := time.Parse("2006-01-02 15:04", fmt.Sprintf("%s %s", oTimeEdit.StartDate, oTimeEdit.StartTime))
+	if serveErr(&w, err) {
+		return
+	}
+
+	oEndTime, err := time.Parse("2006-01-02 15:04", fmt.Sprintf("%s %s", oTimeEdit.EndDate, oTimeEdit.EndTime))
+	if serveErr(&w, err) {
+		return
+	}
+
+	err = database.UpdateTimeDataset(uint(iTimeId), oStartTime, oEndTime)
+	if serveErr(&w, err) {
+		return
+	}
+
+	err = fmt.Errorf("%v", oTimeEdit)
+	serveErr(&w, err)
 }

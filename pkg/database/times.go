@@ -13,8 +13,8 @@ import (
 func initTimesTable() {
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS times (
-			id INTEGER PRIMARY KEY, 
-			taskId INTEGER, 
+			id INTEGER PRIMARY KEY,
+			taskId INTEGER,
 			start DATETIME,
 			end DATETIME,
 			FOREIGN KEY(taskId) REFERENCES tasks(id)
@@ -108,10 +108,10 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 	}
 
 	res, err := QueryStatement(`
-			SELECT 
-				ti.id, 
-				ti.start, 
-				ti.end, 
+			SELECT
+				ti.id,
+				ti.start,
+				ti.end,
 				unixepoch(ti.end) - unixepoch(ti.start) duration,
 				ti.taskId,
 				ta.name
@@ -182,10 +182,10 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 	}
 
 	res, err := QueryStatement(`
-			SELECT 
-				ta.name, 
-				ti.start, 
-				ti.end, 
+			SELECT
+				ta.name,
+				ti.start,
+				ti.end,
 				time(unixepoch(ti.end) - unixepoch(ti.start), "unixepoch") duration
 			FROM times ti
 			LEFT JOIN tasks ta ON ti.taskId = ta.id
@@ -229,11 +229,11 @@ func DeleteTime(iTimeId uint) error {
 func GetTimeByID(iTimeId uint) (ds TimeDS, err error) {
 
 	str := fmt.Sprintf(`
-			SELECT 
+			SELECT
 				ti.id,
-				ta.name, 
-				ti.start, 
-				ti.end, 
+				ta.name,
+				ti.start,
+				ti.end,
 				unixepoch(ti.end) - unixepoch(ti.start) duration
 			FROM times ti
 			LEFT JOIN tasks ta ON ti.taskId = ta.id
@@ -244,10 +244,10 @@ func GetTimeByID(iTimeId uint) (ds TimeDS, err error) {
 	log.Print("query: ", str)
 
 	res, err := QueryStatement(str)
-
 	if err != nil {
 		return
 	}
+	defer res.Close()
 
 	if res.Next() {
 		var name, total, start, end sql.NullString
@@ -266,6 +266,20 @@ func GetTimeByID(iTimeId uint) (ds TimeDS, err error) {
 		err = errors.New("time not found")
 
 	}
+
+	return
+}
+
+func UpdateTimeDataset(iTimeId uint, start time.Time, end time.Time) (err error) {
+
+	sSQLStart := start.Format("2006-01-02 15:04:05")
+	sSQLEnd := end.Format("2005-01-02 15:04:05")
+
+	_, err = ExecStatement(
+		`UPDATE times SET start = ?, end = ? WHERE id = ?`,
+		sSQLStart, sSQLEnd,
+		iTimeId,
+	)
 
 	return
 }
