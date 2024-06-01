@@ -219,6 +219,11 @@ func PostTimeEdit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = fmt.Errorf("%v", oTimeEdit)
-	serveErr(&w, err)
+	oTime, err := database.GetTimeByIDRaw(uint(iTimeId))
+	if serveErr(&w, err) {
+		return
+	}
+
+	tmpl.ExecuteTemplate(w, "time_list_entry", oTime)
+
 }

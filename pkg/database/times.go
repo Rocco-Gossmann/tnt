@@ -97,6 +97,54 @@ func StartNewTime(taskId uint) int {
 	return int(insertId)
 }
 
+func dbRowToTimeRas(res *sql.Rows) (ok bool, obj Time, err error) {
+	ok = false
+
+	var (
+		id, tid  uint
+		s, e, n  sql.NullString
+		d        string
+		duration sql.NullFloat64
+	)
+
+	if res.Next() {
+		ok = true
+
+		err = res.Scan(&id, &s, &e, &duration, &tid, &n)
+		if err != nil {
+			return
+		}
+
+		if !s.Valid {
+			s.String = ""
+		}
+
+		if !e.Valid {
+			e.String = "** running **"
+		}
+
+		if !duration.Valid {
+			duration.Float64 = 0.00
+		}
+
+		if !n.Valid {
+			n.String = " unknown "
+		}
+
+		d = utils.SecToTimePrint(duration.Float64)
+
+		obj.Id = id
+		obj.Start = s.String
+		obj.End = e.String
+		obj.Duration = d
+		obj.TaskId = tid
+		obj.TaskName = n.String
+
+	}
+
+	return
+}
+
 func GetTimesRaw(taskId uint) ([]Time, error) {
 
 	var ret []Time
@@ -124,50 +172,22 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer res.Close()
 
 	var (
-		id, tid  uint
-		s, e, n  sql.NullString
-		d        string
-		duration sql.NullFloat64
+		ok    bool
+		oTime Time
 	)
 
-	for res.Next() {
+	ok, oTime, err = dbRowToTimeRas(res)
 
-		err := res.Scan(&id, &s, &e, &duration, &tid, &n)
-
-		log.Println(id, s, e, d, tid, n)
-
-		if !s.Valid {
-			s.String = ""
-		}
-
-		if !e.Valid {
-			e.String = "** running **"
-		}
-
-		if !duration.Valid {
-			duration.Float64 = 0.00
-		}
-
-		if !n.Valid {
-			n.String = " unknown "
-		}
-
+	for ok {
 		if err != nil {
 			return nil, err
 		}
 
-		d = utils.SecToTimePrint(duration.Float64)
-
-		ret = append(ret, Time{
-			Id:       id,
-			Start:    s.String,
-			End:      e.String,
-			Duration: d,
-			TaskId:   tid,
-			TaskName: n.String,
-		})
+		ret = append(ret, oTime)
+		ok, oTime, err = dbRowToTimeRas(res)
 	}
 
 	return ret, nil
@@ -270,10 +290,42 @@ func GetTimeByID(iTimeId uint) (ds TimeDS, err error) {
 	return
 }
 
+func GetTimeByIDRaw(iTimeId uint) (ds Time, err error) {
+	res, err := QueryStatement(`
+			SELECT
+				ti.id,
+				ti.start,
+				ti.end,
+				unixepoch(ti.end) - unixepoch(ti.start) duration,
+				ti.taskId,
+				ta.name
+			FROM times ti
+			LEFT JOIN tasks ta ON ti.taskId = ta.id
+			WHERE ti.id = ?
+			ORDER BY start DESC;
+		`, iTimeId)
+
+	if err != nil {
+		return
+	}
+	defer res.Close()
+
+	ok, ds, err := dbRowToTimeRas(res)
+	if err != nil {
+		return
+	}
+
+	if !ok {
+		err = fmt.Errorf("not time for ID %d", iTimeId)
+	}
+
+	return
+}
+
 func UpdateTimeDataset(iTimeId uint, start time.Time, end time.Time) (err error) {
 
 	sSQLStart := start.Format("2006-01-02 15:04:05")
-	sSQLEnd := end.Format("2005-01-02 15:04:05")
+	sSQLEnd := end.Format("2006-01-02 15:04:05")
 
 	_, err = ExecStatement(
 		`UPDATE times SET start = ?, end = ? WHERE id = ?`,
