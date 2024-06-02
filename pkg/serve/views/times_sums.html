@@ -1,0 +1,38 @@
+{{ block "times_sum_label" . }}
+<h1 id="times-label">
+    Durations:
+</h1>
+{{ end }}
+
+{{ block "times_sum_section" . }}
+<div id="times-list-section" class=" mt-4 px-2 py-1 ">
+
+    <div id="times-sum-headers" class="
+        grid grid-cols-[10%_90%]
+        mt-4 py-1 px-2
+        group bg-gray-300
+        ">
+        <b>Task</b> <b class="m-auto">Duration</b>
+    </div>
+
+    {{ range . }}
+    <div class="times-sum-entry
+        grid grid-cols-[10%_90%]
+        mt-4 py-1 px-2
+        group hover:bg-gray-300
+    ">
+
+        <span class="time-taskname font-bold  mb-2">
+            {{ .Name }}:
+        </span>
+
+        <span class="time-duration m-auto">
+            {{ .Total }}
+        </span>
+
+    </div>
+    {{ end }}
+
+
+</div>
+{{ end }}
