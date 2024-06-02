@@ -6,7 +6,6 @@ import (
 	"text/template"
 )
 
-
 var tmpl *template.Template
 
 func serveErr(res *http.ResponseWriter, err error) bool {
@@ -24,16 +23,11 @@ func serveErr(res *http.ResponseWriter, err error) bool {
 func serveStatusMsg(w *http.ResponseWriter, status int, msg string) {
 	(*w).WriteHeader(status)
 	(*w).Write([]byte(msg))
-	return
-}
-
-func makeResponseJSON(res *http.ResponseWriter) {
-	(*res).Header().Set("content-type", "application/json")
 }
 
 func runInit() {
 	if tmpl == nil {
-		t, err := template.ParseFS(views, "views/index.html")
+		t, err := template.ParseFS(views, "views/*.html")
 
 		if err != nil {
 			log.Fatal("failed to parse files", err)
@@ -46,4 +40,3 @@ func runInit() {
 func FileServer(fl string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) { http.ServeFileFS(w, r, views, fl) }
 }
-

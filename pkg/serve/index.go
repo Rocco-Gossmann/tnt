@@ -29,8 +29,6 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 	}
 	context.Tasks = tasks
 
-	log.Printf("Tasks: %s\n", context.Tasks)
-
 	times, err := database.GetTimesRaw(0)
 	if serveErr(&w, err) {
 		return
