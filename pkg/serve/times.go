@@ -12,6 +12,10 @@ import (
 	"github.com/rocco-gossmann/tnt/pkg/utils"
 )
 
+// BM: ServeFunctions
+// ==============================================================================
+
+// BM: POST /timer/{taskId}
 func PostTime(w http.ResponseWriter, r *http.Request) {
 	runInit()
 
@@ -37,6 +41,7 @@ func PostTime(w http.ResponseWriter, r *http.Request) {
 	GetTimes(w, r)
 }
 
+// BM: DELETE /timer
 func EndTime(w http.ResponseWriter, r *http.Request) {
 	runInit()
 
@@ -46,6 +51,7 @@ func EndTime(w http.ResponseWriter, r *http.Request) {
 	GetTimes(w, r)
 }
 
+// BM: GET /times
 func GetTimes(w http.ResponseWriter, r *http.Request) {
 
 	runInit()
@@ -75,6 +81,7 @@ func GetTimes(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "times_list_label", task.Name)
 }
 
+// BM: DELETE /time/{timeId}
 func DeleteTime(w http.ResponseWriter, r *http.Request) {
 	runInit()
 
@@ -91,6 +98,7 @@ func DeleteTime(w http.ResponseWriter, r *http.Request) {
 	GetTimes(w, r)
 }
 
+// BM: GET /times/sum   &&   GET /times/sum/{taskId}
 func GetTimeSums(w http.ResponseWriter, r *http.Request) {
 
 	var (
@@ -110,12 +118,92 @@ func GetTimeSums(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "times_sum_section", sums)
 }
 
+// BM: GET /time/edit/{timeid}
+func GetTimeEdit(w http.ResponseWriter, r *http.Request) {
+
+	_, oTimeEdit, err := getEditTimeByPathValue(r, "timeid")
+	if serveErr(&w, err) {
+		return
+	}
+
+	tmpl.ExecuteTemplate(w, "time_edit_row", oTimeEdit)
+}
+
+// BM: POST /time/edit/{timeid}
+func PostTimeEdit(w http.ResponseWriter, r *http.Request) {
+
+	iTimeId, oTimeEdit, err := getEditTimeByPathValue(r, "timeid")
+	if serveErr(&w, err) {
+		return
+	}
+
+	err = r.ParseForm()
+	if serveErr(&w, err) {
+		return
+	}
+
+	body := r.Form
+	log.Println("hit", body)
+
+	oTimeEdit.StartDate = readTimeEditFieldFromBody(body, "startdate", oTimeEdit.StartDate)
+	oTimeEdit.StartTime = readTimeEditFieldFromBody(body, "starttime", oTimeEdit.StartTime)
+	oTimeEdit.EndDate = readTimeEditFieldFromBody(body, "enddate", oTimeEdit.EndDate)
+	oTimeEdit.EndTime = readTimeEditFieldFromBody(body, "endtime", oTimeEdit.EndTime)
+
+	oStartTime, err := time.Parse("2006-01-02 15:04", fmt.Sprintf("%s %s", oTimeEdit.StartDate, oTimeEdit.StartTime))
+	if serveErr(&w, err) {
+		return
+	}
+
+	oEndTime, err := time.Parse("2006-01-02 15:04", fmt.Sprintf("%s %s", oTimeEdit.EndDate, oTimeEdit.EndTime))
+	if serveErr(&w, err) {
+		return
+	}
+
+	err = database.UpdateTimeDataset(uint(iTimeId), oStartTime, oEndTime)
+	if serveErr(&w, err) {
+		return
+	}
+
+	respondWithTime(&w, uint(iTimeId))
+}
+
+// BM: GET /time/{timeid}
+func GetTime(w http.ResponseWriter, r *http.Request) {
+	iTimeId, _, err := getEditTimeByPathValue(r, "timeid")
+	if serveErr(&w, err) {
+		return
+	}
+
+	respondWithTime(&w, uint(iTimeId))
+}
+
+// BM: Helper Functions
+// ==============================================================================
 type cTimeEditTime struct {
 	Id                   uint
 	Task                 string
 	Duration             string
 	StartDate, StartTime string
 	EndDate, EndTime     string
+}
+
+func readTimeEditFieldFromBody(u url.Values, field string, fallback string) string {
+	if u.Has(field) {
+		return u.Get(field)
+	} else {
+		return fallback
+	}
+}
+
+func respondWithTime(w *http.ResponseWriter, iTimeId uint) {
+
+	oTime, err := database.GetTimeByIDRaw(iTimeId)
+	if serveErr(w, err) {
+		return
+	}
+
+	tmpl.ExecuteTemplate(*w, "time_list_entry", oTime)
 }
 
 func getEditTimeByPathValue(r *http.Request, pathValue string) (iTimeID int64, oTimeEdit cTimeEditTime, err error) {
@@ -163,67 +251,4 @@ func getEditTimeByPathValue(r *http.Request, pathValue string) (iTimeID int64, o
 	oTimeEdit.EndTime = t.Format("15:04")
 
 	return
-}
-
-func GetTimeEdit(w http.ResponseWriter, r *http.Request) {
-
-	_, oTimeEdit, err := getEditTimeByPathValue(r, "timeid")
-	if serveErr(&w, err) {
-		return
-	}
-
-	tmpl.ExecuteTemplate(w, "time_edit_row", oTimeEdit)
-
-}
-
-func readTimeEditFieldFromBody(u url.Values, field string, fallback string) string {
-	if u.Has(field) {
-		return u.Get(field)
-	} else {
-		return fallback
-	}
-}
-
-func PostTimeEdit(w http.ResponseWriter, r *http.Request) {
-
-	iTimeId, oTimeEdit, err := getEditTimeByPathValue(r, "timeid")
-	if serveErr(&w, err) {
-		return
-	}
-
-	err = r.ParseForm()
-	if serveErr(&w, err) {
-		return
-	}
-
-	body := r.Form
-	log.Println("hit", body)
-
-	oTimeEdit.StartDate = readTimeEditFieldFromBody(body, "startdate", oTimeEdit.StartDate)
-	oTimeEdit.StartTime = readTimeEditFieldFromBody(body, "starttime", oTimeEdit.StartTime)
-	oTimeEdit.EndDate = readTimeEditFieldFromBody(body, "enddate", oTimeEdit.EndDate)
-	oTimeEdit.EndTime = readTimeEditFieldFromBody(body, "endtime", oTimeEdit.EndTime)
-
-	oStartTime, err := time.Parse("2006-01-02 15:04", fmt.Sprintf("%s %s", oTimeEdit.StartDate, oTimeEdit.StartTime))
-	if serveErr(&w, err) {
-		return
-	}
-
-	oEndTime, err := time.Parse("2006-01-02 15:04", fmt.Sprintf("%s %s", oTimeEdit.EndDate, oTimeEdit.EndTime))
-	if serveErr(&w, err) {
-		return
-	}
-
-	err = database.UpdateTimeDataset(uint(iTimeId), oStartTime, oEndTime)
-	if serveErr(&w, err) {
-		return
-	}
-
-	oTime, err := database.GetTimeByIDRaw(uint(iTimeId))
-	if serveErr(&w, err) {
-		return
-	}
-
-	tmpl.ExecuteTemplate(w, "time_list_entry", oTime)
-
 }

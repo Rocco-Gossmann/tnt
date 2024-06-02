@@ -67,6 +67,9 @@
             >Save</button>
 
             <button class="btn group-hover:bg-white"
+            hx-get="/time/{{ .Id }}"
+            hx-target="#times-entry-{{ .Id }}"
+            hx-swap="outerHTML"
                 >Cancel</button>
         </span>
     </form>
@@ -95,8 +98,6 @@
         <b class="m-auto">End</b>
         <b class="m-auto">Duration</b>
         <b>&nbsp;</b>
-
-
 
     </div>
 

@@ -97,6 +97,7 @@ var ServeCMD cobra.Command = cobra.Command{
 
 		mux.HandleFunc("DELETE /time/{timeid}", logRequestPrefix("(DELETE /time/{timeid})", globalHeaders(serve.DeleteTime)))
 
+		mux.HandleFunc("GET /time/{timeid}", logRequestPrefix("(GET /time/{timeid})", globalHeaders(serve.GetTime)))
 		mux.HandleFunc("GET /time/edit/{timeid}", logRequestPrefix("(GET /time/edit/{timeid})", globalHeaders(serve.GetTimeEdit)))
 		mux.HandleFunc("POST /time/edit/{timeid}", logRequestPrefix("(POST /time/edit/{timeid})", globalHeaders(serve.PostTimeEdit)))
 
