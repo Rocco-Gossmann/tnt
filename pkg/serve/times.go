@@ -138,7 +138,7 @@ func getEditTimeByPathValue(r *http.Request, pathValue string) (iTimeID int64, o
 
 	// Duration
 	//==============================================================================
-	iDur, err := strconv.ParseFloat(oTime.Duration, 10)
+	iDur, err := strconv.ParseFloat(oTime.Duration, 64)
 	if err != nil {
 		return
 	}
