@@ -51,7 +51,7 @@ func EndTime(w http.ResponseWriter, r *http.Request) {
 	GetTimes(w, r)
 }
 
-// BM: GET /times
+// BM: GET /times  && GET /times/{taskId}
 func GetTimes(w http.ResponseWriter, r *http.Request) {
 
 	runInit()
@@ -75,6 +75,13 @@ func GetTimes(w http.ResponseWriter, r *http.Request) {
 	times, err := database.GetTimesRaw(task.Id)
 	if serveErr(&w, err) {
 		return
+	}
+
+	for i, oTime := range times {
+		times[i], err = prepareTimeObjForOutput(oTime)
+		if serveErr(&w, err) {
+			return
+		}
 	}
 
 	tmpl.ExecuteTemplate(w, "times_list_section", times)
@@ -203,6 +210,11 @@ func respondWithTime(w *http.ResponseWriter, iTimeId uint) {
 		return
 	}
 
+	oTime, err = prepareTimeObjForOutput(oTime)
+	if serveErr(w, err) {
+		return
+	}
+
 	tmpl.ExecuteTemplate(*w, "time_list_entry", oTime)
 }
 
@@ -249,6 +261,31 @@ func getEditTimeByPathValue(r *http.Request, pathValue string) (iTimeID int64, o
 	}
 	oTimeEdit.EndDate = t.Format("2006-01-02")
 	oTimeEdit.EndTime = t.Format("15:04")
+
+	return
+}
+
+func prepareDateForOutput(date string) (string, error) {
+	oStart, err := time.Parse(utils.SQL_OUTPUT_DATETIMEFORMAT, date)
+	if err != nil {
+		return "", nil
+	}
+	return oStart.Format("02. Jan. 2006<br /> 15:04:05"), nil
+}
+
+func prepareTimeObjForOutput(oTime database.Time) (ret database.Time, err error) {
+
+	ret = oTime
+
+	ret.Start, err = prepareDateForOutput(ret.Start)
+	if err != nil {
+		return
+	}
+
+	ret.End, err = prepareDateForOutput(ret.End)
+	if err != nil {
+		return
+	}
 
 	return
 }

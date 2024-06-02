@@ -41,15 +41,15 @@
             {{ .Task }}
         </span>
 
-        <span class="time-starttime md:m-auto whitespace-nowrap">
+        <span class="time-starttime md:m-auto">
             <b class="md:hidden">Start:</b>
-            <input type="date" name="startdate" value="{{ .StartDate }}" />
+            <input type="date" name="startdate" value="{{ .StartDate }}" /><br />
             <input type="time" name="starttime" value="{{ .StartTime }}" />
         </span>
 
-        <span class="time-endtime md:m-auto whitespace-nowrap">
+        <span class="time-endtime md:m-auto">
             <b class="md:hidden">End:</b>
-            <input type="date" name="enddate" value="{{ .EndDate }}" />
+            <input type="date" name="enddate" value="{{ .EndDate }}" /><br />
             <input type="time" name="endtime" value="{{ .EndTime }}" />
         </span>
 

@@ -33,6 +33,14 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 	if serveErr(&w, err) {
 		return
 	}
+
+	for i, oTime := range times {
+		times[i], err = prepareTimeObjForOutput(oTime)
+		if serveErr(&w, err) {
+			return
+		}
+	}
+
 	context.Times = times
 
 	if r.URL.Path == "/" {
