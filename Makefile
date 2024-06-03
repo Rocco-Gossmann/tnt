@@ -69,5 +69,6 @@ remake:
 
 clean:
 	rm -rf $(BUILDDIR)/tnt
+	rm -rf $(BUILDDIR)/debug.run
 	rm -rf $(BUILDDIR)/tnt.win.x86_64.exe
 	rm -rf $(BUILDDIR)/tnt.linux.x86_64
