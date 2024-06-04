@@ -270,7 +270,7 @@ func prepareDateForOutput(date string) (string, error) {
 	if err != nil {
 		return "", nil
 	}
-	return oStart.Format("02. Jan. 2006<br /> 15:04:05"), nil
+	return oStart.Format("02. Jan. 2006 - 15:04:05"), nil
 }
 
 func prepareTimeObjForOutput(oTime database.Time) (ret database.Time, err error) {

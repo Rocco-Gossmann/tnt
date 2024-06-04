@@ -206,7 +206,7 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 				ta.name,
 				ti.start,
 				ti.end,
-				time(unixepoch(ti.end) - unixepoch(ti.start), "unixepoch") duration
+				unixepoch(ti.end) - unixepoch(ti.start) duration
 			FROM times ti
 			LEFT JOIN tasks ta ON ti.taskId = ta.id
 			` + taskWhere + `
@@ -216,9 +216,12 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 	if err != nil {
 		return ret, err
 	}
+	defer res.Close()
 
 	for res.Next() {
-		var name, total, start, end sql.NullString
+		var name, start, end sql.NullString
+		var total float64
+
 		err = res.Scan(&name, &start, &end, &total)
 		utils.Err(err)
 
@@ -226,15 +229,11 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 			end.String = "* running *"
 		}
 
-		if total.Valid {
-			total.String += " Hours"
-		}
-
 		ret = append(ret, TimeDS{
 			Task:     name.String,
-			Start:    start.String,
-			End:      end.String,
-			Duration: total.String,
+			Start:    utils.DateTimePrint(start.String),
+			End:      utils.DateTimePrint(end.String),
+			Duration: fmt.Sprintf("%s Hours", utils.SecToTimePrint(total)),
 		})
 	}
 
