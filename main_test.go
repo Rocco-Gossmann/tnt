@@ -82,7 +82,7 @@ func TestEverything(test *testing.T) {
 	})
 
 	test.Run("Make sure task is listed by ls", func(test *testing.T) {
-		tasks, err := database.GetTaskList()
+		tasks, err := database.GetTaskList("")
 		handleunexpectedError(err, "while listing tasks")
 
 		if len(tasks) != 1 {

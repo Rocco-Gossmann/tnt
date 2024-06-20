@@ -3,59 +3,64 @@
 @tailwind utilities;
 
 H1 {
-  @apply font-bold text-lg inline;
+    @apply font-bold text-lg inline;
 }
 
 SUMMARY {
-  @apply cursor-pointer;
+    @apply cursor-pointer;
+}
+
+.default-grid {
+    @apply grid
+        gap-1;
 }
 
 .btn {
-  @apply bg-gray-300
-    border-[2px] 
-    rounded-[.5rem] 
+    @apply bg-gray-300
+    border-[2px]
+    rounded-[.5rem]
     border-gray-300
-    px-4 
+    px-4
     py-1;
 }
 
 INPUT {
-  @apply border-[2px] 
-    rounded-[.5rem] 
+    @apply border-[2px]
+    rounded-[.5rem]
     border-gray-300
-    px-4 
+    px-4
     py-1;
 }
 
 .btn-table-row-option {
-  @apply inline-block 
-    group-hover:bg-white 
-    aspect-square 
-    w-[12mm]
-  ;
+    @apply inline-block
+    group-hover:bg-white
+    aspect-square
+    w-[12mm];
 }
 
 .expand-frame {
-  --transition-time: 1s ease-out;
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows var(--transition-time);
+    --transition-time: 1s ease-out;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--transition-time);
 
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .expand-frame.expand-open {
-  grid-template-rows: 1fr;
+    grid-template-rows: 1fr;
 }
 
 .expand-frame > .expand-content {
-  min-height: 0px;
-  visibility: hidden;
-  transition: visibility var(--transition-time), margin-top var(--transition-time); 
+    min-height: 0px;
+    visibility: hidden;
+    transition:
+        visibility var(--transition-time),
+        margin-top var(--transition-time);
 }
 
 .expand-frame.expand-open > .expand-content {
-  visibility: visible;
-  @apply mt-4;
+    visibility: visible;
+    @apply mt-4;
 }
-

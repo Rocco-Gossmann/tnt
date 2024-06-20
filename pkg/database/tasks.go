@@ -29,27 +29,31 @@ type TimeSum struct {
 type TaskList []Task
 
 // GetTaskList returns a slice of all Tasknames currently registered
-func GetTaskList() (ret []Task, err error) {
+func GetTaskList(search string) (ret []Task, err error) {
 
-	// Pretpare statements
-	stmt, err := db.Prepare(`
-		SELECT 
-			ta.id, 
-			ta.textkey, 
+	var searchStr string = ""
+	var rows *sql.Rows
+
+	if len(search) > 0 {
+		searchStr = fmt.Sprintf("%%%s%%", search)
+	} else {
+		searchStr = "%"
+	}
+
+	rows, err = QueryStatement(`
+		SELECT
+			ta.id,
+			ta.textkey,
 			ta.name,
 			(SELECT COUNT(*) FROM times ti WHERE ti.taskId=ta.id AND ti.End IS NULL) active
-		FROM 
+		FROM
 			tasks ta
+		WHERE ta.name LIKE ?
 		ORDER BY
 			ta.name ASC
-	`)
-	if err != nil {
-		return
-	}
-	defer stmt.Close()
+	`, searchStr)
 
 	// Run Query
-	rows, err := stmt.Query()
 	if err != nil {
 		return
 	}
@@ -219,10 +223,10 @@ func GetTimeSums(iTaskId uint) []TimeSum {
 	}
 
 	res, err := QueryStatement(`
-		SELECT 
-			ta.name, 
+		SELECT
+			ta.name,
 			sum(unixepoch(ti.end) - unixepoch(ti.start)) total
-		FROM times ti 
+		FROM times ti
 			LEFT JOIN tasks ta ON ti.taskId = ta.id
 		WHERE end IS NOT NULL` + taskWHERE + ` GROUP by taskId
 	`)

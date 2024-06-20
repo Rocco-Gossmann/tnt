@@ -14,7 +14,7 @@ var LSCMD = cobra.Command{
 	Long:                  "Lists all previously entered tasks.",
 	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
-		tasks, err := database.GetTaskList()
+		tasks, err := database.GetTaskList("")
 		utils.Err(err)
 
 		for _, task := range tasks {

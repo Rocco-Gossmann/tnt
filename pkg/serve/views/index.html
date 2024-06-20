@@ -1,69 +1,107 @@
 {{ block "index" . }}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <script type="text/javascript" src="./htmx.js"></script>
+        <link rel="stylesheet" href="./main.css" />
+    </head>
 
-<head>
-    <script type="text/javascript" src="./htmx.js"></script>
-    <link rel="stylesheet" href="./main.css">
-</head>
+    <body
+        class="p-2 max-w-6xl m-auto xl:shadow-xl xl:shadow-gray-400 xl:min-h-[100vh]"
+    >
+        <details open>
+            <summary><h1>Tasks:</h1></summary>
+            <header class="grid grid-cols-[1fr_0fr]">
+                <div class="flex gap-2">
+                    <button
+                        id="btn_reload_tasks"
+                        title="Reload Tasks"
+                        hx-get="/tasks"
+                        hx-target="#task-list"
+                        class="btn text-[1.5rem]"
+                    >
+                        &#10226;
+                    </button>
 
-<body class="p-2 max-w-6xl m-auto xl:shadow-xl xl:shadow-gray-400 xl:min-h-[100vh]">
+                    <button
+                        onclick=" taskAddFrm.classList.toggle('expand-open'); "
+                        class="btn text-[1.5rem]"
+                    >
+                        &#10010;
+                    </button>
+                </div>
+            </header>
 
-    <details open>
-        <summary> <h1> Tasks: </h1> </summary>
-        <header class="grid grid-cols-[1fr_0fr]">
-            <div class="flex gap-2">
-                <button id="btn_reload_tasks" title="Reload Tasks" hx-get="/tasks" hx-target="#task-list"
-                    class="btn text-[1.5rem]">&#10226;</button>
+            <section id="tasks-section">
+                <div
+                    id="taskAddFrm"
+                    class="expand-frame mb-4"
+                    style="--transition-time: 0.25s"
+                >
+                    <form
+                        hx-post="/task"
+                        hx-target="#task-list"
+                        hx-swap="outerHTML"
+                        hx-on::xhr:loadend="this.taskname.value=''"
+                        class="expand-content grid grid-cols-[1fr_0fr] gap-1"
+                    >
+                        <input
+                            type="text"
+                            name="taskname"
+                            id="inp_new_task_text"
+                        />
+                        <button class="btn text-nowrap" type="submit">
+                            + add to list
+                        </button>
+                    </form>
+                </div>
 
-                <button onclick=" taskAddFrm.classList.toggle('expand-open'); "
-                    class="btn text-[1.5rem]">&#10010;</button>
+                {{ template "task_list_section" .Tasks }}
+            </section>
+        </details>
 
-            </div>
-        </header>
+        <details open class="mt-4">
+            <summary><h1>Times</h1></summary>
 
-        <section id="tasks-section">
+            <section id="times-section">
+                {{ template "times_list_label" .Label }}
 
-            <div id="taskAddFrm" class="expand-frame mb-4" style="--transition-time: .25s">
-                <form hx-post="/task" hx-target="#task-list" hx-swap="outerHTML"
-                    hx-on::xhr:loadend="this.taskname.value=''" class="expand-content grid grid-cols-[1fr_0fr] gap-1">
-                    <input type="text" name="taskname" id="inp_new_task_text" />
-                    <button class="btn text-nowrap" type="submit"> + add to list</button>
-                </form>
-            </div>
+                <div class="grid grid-cols-[1fr_0fr] mt-12">
+                    <span class="text-nowrap gap-4 flex">
+                        <button
+                            class="btn inline-block group-hover:bg-white"
+                            hx-delete="/timer"
+                            hx-swap="none"
+                            hx-select-oob="#times-label,#times-list-section,#task-list"
+                        >
+                            stop Timer
+                        </button>
+                        <button
+                            hx-get="/times"
+                            hx-swap="none"
+                            hx-select-oob="#times-label,#times-list-section"
+                            id="btn_show_all_times"
+                            class="btn w-fit justify-self-end"
+                        >
+                            all Tasks
+                        </button>
 
-            {{ template "task_list_section" .Tasks }}
+                        <button
+                            hx-get="/times/sum"
+                            hx-swap="none"
+                            hx-select-oob="#times-label, #times-list-section"
+                            hx-trigger="click"
+                            id="btn_times_sum"
+                            class="btn w-fit justify-self-end"
+                        >
+                            all &sum;
+                        </button>
+                    </span>
+                </div>
 
-        </section>
-    </details>
-
-    <details open class="mt-4">
-
-        <summary><h1>Times</h1></summary>
-
-        <section id="times-section">
-            {{ template "times_list_label" .Label }}
-
-            <div class="grid grid-cols-[1fr_0fr] mt-12">
-
-
-                <span class="text-nowrap gap-4 flex">
-
-                    <button class="btn inline-block group-hover:bg-white" hx-delete="/timer" hx-swap="none"
-                        hx-select-oob="#times-label,#times-list-section,#task-list">stop Timer</button>
-                    <button hx-get="/times" hx-swap="none" hx-select-oob="#times-label,#times-list-section"
-                        id="btn_show_all_times" class="btn w-fit justify-self-end">all Tasks</button>
-
-                    <button hx-get="/times/sum" hx-swap="none" hx-select-oob="#times-label, #times-list-section"
-                        hx-trigger="click" id="btn_times_sum" class="btn w-fit justify-self-end">all &sum;</button>
-                </span>
-            </div>
-
-            {{ template "times_list_section" .Times }}
-
-        </section>
-    </details>
-</body>
-
+                {{ template "times_list_section" .Times }}
+            </section>
+        </details>
+    </body>
 </html>
 {{ end }}

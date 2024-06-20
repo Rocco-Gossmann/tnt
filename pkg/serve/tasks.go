@@ -14,7 +14,22 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 	log.Println("call GetTasks")
 	runInit()
 
-	tasks, err := database.GetTaskList()
+	var tasks []database.Task
+	var err error
+
+	err = r.ParseForm()
+	if serveErr(&w, err) {
+		return
+	}
+
+	log.Print("search form ", r.Form)
+
+	if r.Form.Has("task_search") {
+		tasks, err = database.GetTaskList(r.Form.Get("task_search"))
+	} else {
+		tasks, err = database.GetTaskList("")
+	}
+
 	if serveErr(&w, err) {
 		return
 	}

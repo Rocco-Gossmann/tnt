@@ -32,6 +32,17 @@
 
 {{ block "task_list_section" . }}
 <div id="task-list">
+    <form
+        hx-get="/tasks"
+        hx-target="#task-list"
+        hx-swap="outerHTML"
+        hx-trigger="submit, keyup delay:400ms"
+        class="default-grid grid-cols-[1fr,_0fr] mb-4"
+    >
+        <input type="text" name="task_search" />
+        <button type="submit" class="btn">&#x1f50e;</button>
+    </form>
+
     {{ range . }}
         {{ template "task_list_entry" . }}
     {{ end }}

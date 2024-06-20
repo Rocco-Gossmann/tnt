@@ -7,8 +7,7 @@ import (
 
 func AutoCompleteTaskList(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 
-
-	tasks, err := GetTaskList()
+	tasks, err := GetTaskList("")
 	utils.Err(err)
 
 	lst := TaskList(tasks).ExtractTaskListNames()

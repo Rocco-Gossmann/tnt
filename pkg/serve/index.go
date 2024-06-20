@@ -23,7 +23,7 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 		Label: "",
 	}
 
-	tasks, err := database.GetTaskList()
+	tasks, err := database.GetTaskList("")
 	if serveErr(&w, err) {
 		return
 	}
