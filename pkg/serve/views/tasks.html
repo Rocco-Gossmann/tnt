@@ -16,18 +16,17 @@
             hx-select-oob="#times-label,#times-list-section" hx-swap="none">&sum;</button>
 
         {{ if .Active }}
-        <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial]"
-            hx-delete="/timer/{{ .Id }}" hx-swap="none"
-            hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F9;</button>
+            <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial]"
+                hx-delete="/timer/{{ .Id }}" hx-swap="none"
+                hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F9;</button>
         {{ else }}
-        <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial]" hx-post="/timer/{{ .Id }}"
-            hx-swap="none" hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F5</button>
+            <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial]" hx-post="/timer/{{ .Id }}"
+                hx-swap="none" hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F5</button>
         {{ end }}
 
     </span>
 </div>
 {{ end }}
-
 
 
 {{ block "task_list_section" . }}
@@ -36,15 +35,17 @@
         hx-get="/tasks"
         hx-target="#task-list"
         hx-swap="outerHTML"
-        hx-trigger="submit, keyup delay:400ms"
+        hx-trigger="submit, keyup delay:300ms"
+        hx-on::afterSwap="document.querySelector('#task_search_field').focus()"
         class="default-grid grid-cols-[1fr,_0fr] mb-4"
     >
-        <input type="text" name="task_search" />
+        <input type="text" name="task_search" id="task_search_field" value="{{ .Search }}" />
         <button type="submit" class="btn">&#x1f50e;</button>
     </form>
 
-    {{ range . }}
+    {{ range .Tasks }}
         {{ template "task_list_entry" . }}
     {{ end }}
+
 </div>
 {{ end }}

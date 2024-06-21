@@ -1,4 +1,4 @@
 #!/bin/bash
 
-tmux-workspace "TasksNTimes" "GIT" -c "lg && zsh"\
-    -w "terminal" -c "make serve && zsh"
+tmux-workspace "TasksNTimes" "Compiler" -c "make serve"\
+    -w "terminal" -c "zsh"

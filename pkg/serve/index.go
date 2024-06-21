@@ -8,7 +8,7 @@ import (
 )
 
 type IndexContext struct {
-	Tasks []database.Task
+	Tasks TaskListTemplateContext
 	Times []database.Time
 	Label string
 }
@@ -19,7 +19,6 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 
 	var context = IndexContext{
 		Times: make([]database.Time, 0),
-		Tasks: make([]database.Task, 0),
 		Label: "",
 	}
 
@@ -27,7 +26,7 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 	if serveErr(&w, err) {
 		return
 	}
-	context.Tasks = tasks
+	context.Tasks = TaskListTemplateContext{Tasks: tasks, Search: ""}
 
 	times, err := database.GetTimesRaw(0)
 	if serveErr(&w, err) {

@@ -9,32 +9,36 @@ import (
 	"github.com/rocco-gossmann/tnt/pkg/database"
 )
 
+type TaskListTemplateContext struct {
+	Tasks  []database.Task
+	Search string
+}
+
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("call GetTasks")
 	runInit()
 
-	var tasks []database.Task
-	var err error
+	context := TaskListTemplateContext{Search: ""}
 
+	var err error
 	err = r.ParseForm()
 	if serveErr(&w, err) {
 		return
 	}
 
-	log.Print("search form ", r.Form)
-
 	if r.Form.Has("task_search") {
-		tasks, err = database.GetTaskList(r.Form.Get("task_search"))
+		context.Search = r.Form.Get("task_search")
+		context.Tasks, err = database.GetTaskList(context.Search)
 	} else {
-		tasks, err = database.GetTaskList("")
+		context.Tasks, err = database.GetTaskList("")
 	}
 
 	if serveErr(&w, err) {
 		return
 	}
 
-	tmpl.ExecuteTemplate(w, "task_list_section", tasks)
+	tmpl.ExecuteTemplate(w, "task_list_section", context)
 
 }
 

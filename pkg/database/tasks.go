@@ -31,16 +31,23 @@ type TaskList []Task
 // GetTaskList returns a slice of all Tasknames currently registered
 func GetTaskList(search string) (ret []Task, err error) {
 
-	var searchStr string = ""
+	var searchTpl string = ""
 	var rows *sql.Rows
 
+	var searches []any = make([]any, 0, 1)
+
 	if len(search) > 0 {
-		searchStr = fmt.Sprintf("%%%s%%", search)
+		for i, s := range strings.Split(search, " ") {
+			searches = append(searches, fmt.Sprintf("%%%s%%", s))
+			if i > 0 {
+				searchTpl = searchTpl + " AND ta.name LIKE ? "
+			}
+		}
 	} else {
-		searchStr = "%"
+		searches = append(searches, "%")
 	}
 
-	rows, err = QueryStatement(`
+	rows, err = QueryStatement(fmt.Sprintf(`
 		SELECT
 			ta.id,
 			ta.textkey,
@@ -48,10 +55,10 @@ func GetTaskList(search string) (ret []Task, err error) {
 			(SELECT COUNT(*) FROM times ti WHERE ti.taskId=ta.id AND ti.End IS NULL) active
 		FROM
 			tasks ta
-		WHERE ta.name LIKE ?
+		WHERE ta.name LIKE ? %s
 		ORDER BY
 			ta.name ASC
-	`, searchStr)
+	`, searchTpl), searches...)
 
 	// Run Query
 	if err != nil {
