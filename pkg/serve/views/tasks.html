@@ -1,34 +1,3 @@
-{{ block "task_list_entry" . }}
-<div id="task-entry-{{ .Id }}" class="
-    border-b border-b-gray-300
-    px-2 py-1
-    grid grid-cols-[1fr_0fr] items-end
-    group hover:bg-gray-300">
-    <a href="#" id="show_task_{{ .Id }}" hx-get="/times/{{ .Id }}" hx-swap="none"
-        hx-select-oob="#times-label,#times-list-section">{{ .Name }}</a>
-
-    <span class="text-nowrap">
-        <button class="btn btn-table-row-option" hx-confirm="Do you want to delete this task and all its times?"
-            hx-delete="/task/{{ .Id }}" hx-target="#task-entry-{{ .Id }}" hx-swap="delete"
-            hx-select-oob="#times-label,#times-list-section">&times;</button>
-
-        <button class="btn btn-table-row-option" hx-get="/times/sum/{{ .Id }}"
-            hx-select-oob="#times-label,#times-list-section" hx-swap="none">&sum;</button>
-
-        {{ if .Active }}
-            <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial]"
-                hx-delete="/timer/{{ .Id }}" hx-swap="none"
-                hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F9;</button>
-        {{ else }}
-            <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial]" hx-post="/timer/{{ .Id }}"
-                hx-swap="none" hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F5</button>
-        {{ end }}
-
-    </span>
-</div>
-{{ end }}
-
-
 {{ block "task_list_section" . }}
 <div id="task-list">
     <form
@@ -39,12 +8,54 @@
         hx-on::afterSwap="document.querySelector('#task_search_field').focus()"
         class="default-grid grid-cols-[1fr,_0fr] mb-4"
     >
-        <input type="text" name="task_search" id="task_search_field" value="{{ .Search }}" />
+        <span class="relative">
+            <input
+                class="w-full"
+                type="text" name="task_search" id="task_search_field" value="{{ .Search }}" />
+            <button
+                class="absolute right-3 h-full"
+                onclick="document.getElementById('task_search_field').value=''">&#128465;</button>
+        </span>
+
         <button type="submit" class="btn">&#x1f50e;</button>
     </form>
 
+    {{- /*
+        Extract Search from the current pipline, so that it may be added
+        to each entry in the loop
+    */ -}}
+    {{ $search := .Search }}
+
     {{ range .Tasks }}
-        {{ template "task_list_entry" . }}
+    <div id="task-entry-{{ .Id }}" class="
+        border-b border-b-gray-300
+        px-2 py-1
+        grid grid-cols-[1fr_0fr] items-end
+        group hover:bg-gray-300">
+        <a href="#" id="show_task_{{ .Id }}" hx-get="/times/{{ .Id }}" hx-swap="none"
+            hx-select-oob="#times-label,#times-list-section">{{ .Name }}</a>
+
+        <span class="text-nowrap">
+            <button class="btn btn-table-row-option" hx-confirm="Do you want to delete this task and all its times?"
+                hx-delete="/task/{{ .Id }}" hx-target="#task-entry-{{ .Id }}" hx-swap="delete"
+                hx-select-oob="#times-label,#times-list-section">&times;</button>
+
+            <button class="btn btn-table-row-option" hx-get="/times/sum/{{ .Id }}"
+                hx-select-oob="#times-label,#times-list-section" hx-swap="none">&sum;</button>
+
+            {{ if .Active }}
+                <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial]"
+                    hx-include="[task_search='{{ $search }}']"
+                    hx-delete="/timer/{{ .Id }}?task_search={{ urlquery $search }}" hx-swap="none"
+                    hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F9;</button>
+            {{ else }}
+                <button id="tasks-{{ .Id }}-timerbtn" class="btn btn-table-row-option font-[initial] inactive_timerbtn" hx-post="/timer/{{ .Id }}?task_search={{ urlquery $search }}"
+                    hx-swap="none"
+                    hx-select-oob="#times-label,#times-list-section,#task-list">&#x23F5</button>
+            {{ end }}
+
+        </span>
+    </div>
     {{ end }}
 
 </div>
