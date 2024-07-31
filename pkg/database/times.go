@@ -7,11 +7,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/rocco-gossmann/tnt/pkg/utils"
+	sqlite "github.com/rocco-gossmann/go_sqliteutils"
+	utils "github.com/rocco-gossmann/go_utils"
 )
 
 func initTimesTable() {
-	_, err := db.Exec(`
+	_, err := sqlite.ExecStatement(`
 		CREATE TABLE IF NOT EXISTS times (
 			id INTEGER PRIMARY KEY,
 			taskId INTEGER,
@@ -47,12 +48,12 @@ func (ts TimeDS) String() string {
 
 func getSQLTimeNow() string {
 	tm := time.Now()
-	return tm.Format(utils.SQL_DATETIME_FORMAT)
+	return tm.Format(sqlite.SQL_DATETIME_FORMAT)
 }
 
 func TimedTaskIsRunning(taskId uint) bool {
 	c := 0
-	result, err := RowQueryStatement("SELECT COUNT(*) FROM times WHERE taskId=? AND end IS NULL", taskId)
+	result, err := sqlite.RowQueryStatement("SELECT COUNT(*) FROM times WHERE taskId=? AND end IS NULL", taskId)
 	utils.Err(err)
 
 	err = result.Scan(&c)
@@ -64,7 +65,7 @@ func TimedTaskIsRunning(taskId uint) bool {
 // @panic error - on DB issue
 func FinishCurrentlyRunningTimes() {
 	endTS := getSQLTimeNow()
-	result, err := ExecStatement("UPDATE times SET end=? WHERE END IS NULL", endTS)
+	result, err := sqlite.ExecStatement("UPDATE times SET end=? WHERE END IS NULL", endTS)
 	utils.Err(err)
 
 	rowCnt, err := result.RowsAffected()
@@ -78,7 +79,7 @@ func FinishCurrentlyRunningTimes() {
 func StartNewTimeRaw(taskId uint) (insertId int64, err error) {
 	startTS := getSQLTimeNow()
 
-	result, err := ExecStatement("INSERT INTO times(taskId, start) values(?, ?)", taskId, startTS)
+	result, err := sqlite.ExecStatement("INSERT INTO times(taskId, start) values(?, ?)", taskId, startTS)
 	if err != nil {
 		return
 	}
@@ -155,7 +156,7 @@ func GetTimesRaw(taskId uint) ([]Time, error) {
 		taskWhere = fmt.Sprintf(" WHERE taskId=%d ", taskId)
 	}
 
-	res, err := QueryStatement(`
+	res, err := sqlite.QueryStatement(`
 			SELECT
 				ti.id,
 				ti.start,
@@ -201,7 +202,7 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 		taskWhere = fmt.Sprintf(" WHERE taskId=%d ", taskId)
 	}
 
-	res, err := QueryStatement(`
+	res, err := sqlite.QueryStatement(`
 			SELECT
 				ta.name,
 				ti.start,
@@ -231,8 +232,8 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 
 		ret = append(ret, TimeDS{
 			Task:     name.String,
-			Start:    utils.DateTimePrint(start.String),
-			End:      utils.DateTimePrint(end.String),
+			Start:    sqlite.SQLDateTimePrint(start.String),
+			End:      sqlite.SQLDateTimePrint(end.String),
 			Duration: fmt.Sprintf("%s Hours", utils.SecToTimePrint(total)),
 		})
 	}
@@ -241,7 +242,7 @@ func GetTimes(taskId uint) ([]TimeDS, error) {
 }
 
 func DeleteTime(iTimeId uint) error {
-	_, err := ExecStatement("DELETE FROM times WHERE id=?", iTimeId)
+	_, err := sqlite.ExecStatement("DELETE FROM times WHERE id=?", iTimeId)
 	return err
 }
 
@@ -262,7 +263,7 @@ func GetTimeByID(iTimeId uint) (ds TimeDS, err error) {
 
 	log.Print("query: ", str)
 
-	res, err := QueryStatement(str)
+	res, err := sqlite.QueryStatement(str)
 	if err != nil {
 		return
 	}
@@ -290,7 +291,7 @@ func GetTimeByID(iTimeId uint) (ds TimeDS, err error) {
 }
 
 func GetTimeByIDRaw(iTimeId uint) (ds Time, err error) {
-	res, err := QueryStatement(`
+	res, err := sqlite.QueryStatement(`
 			SELECT
 				ti.id,
 				ti.start,
@@ -326,7 +327,7 @@ func UpdateTimeDataset(iTimeId uint, start time.Time, end time.Time) (err error)
 	sSQLStart := start.Format("2006-01-02 15:04:05")
 	sSQLEnd := end.Format("2006-01-02 15:04:05")
 
-	_, err = ExecStatement(
+	_, err = sqlite.ExecStatement(
 		`UPDATE times SET start = ?, end = ? WHERE id = ?`,
 		sSQLStart, sSQLEnd,
 		iTimeId,

@@ -59,7 +59,7 @@ func TestEverything(test *testing.T) {
 				test.Fatal("failed to stop '", TEST_TASK_1, "' from being added twice")
 			}
 
-			if err.Error() != "UNIQUE constraint failed: tasks.textkey" {
+			if err.Error() != "constraint failed: UNIQUE constraint failed: tasks.textkey (2067)" {
 				test.Fatal("Wrong Error messages: Expected: 'UNIQUE constraint failed: tasks.textkey' => Got '", err.Error(), "'")
 			}
 		}

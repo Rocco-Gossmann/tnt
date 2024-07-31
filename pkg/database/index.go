@@ -4,10 +4,9 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"strings"
 
-	_ "github.com/mattn/go-sqlite3"
-	"github.com/rocco-gossmann/tnt/pkg/utils"
+	sqlite "github.com/rocco-gossmann/go_sqliteutils"
+	utils "github.com/rocco-gossmann/go_utils"
 )
 
 const DEFAULT_DBFILE string = "tnt.db"
@@ -15,39 +14,6 @@ const DEFAULT_DBFILE string = "tnt.db"
 var dbFileName string = DEFAULT_DBFILE
 
 var db *sql.DB
-
-// Runs a prepared statement on the database. Requires the DB to be initilaized first
-func ExecStatement(statement string, args ...any) (sql.Result, error) {
-	stmt, err := db.Prepare(statement)
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
-	return stmt.Exec(args...)
-}
-
-// Runs a prepared statement on the database. Requires the DB to be initilaized first
-func QueryStatement(statement string, args ...any) (*sql.Rows, error) {
-	stmt, err := db.Prepare(statement)
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
-	return stmt.Query(args...)
-}
-
-// Runs a prepared statement on the database. Requires the DB to be initilaized first
-func RowQueryStatement(statement string, args ...any) (*sql.Row, error) {
-	stmt, err := db.Prepare(statement)
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
-	return stmt.QueryRow(args...), nil
-}
 
 // Sets a new Default db file path
 func SetDBFileName(fileName string) {
@@ -85,30 +51,24 @@ func InitDB(dbFile string) {
 
 	utils.Err(err)
 
-	_, fiErr := os.Stat(dbFile)
-	db, err = sql.Open("sqlite3", dbFile)
-	if os.IsNotExist(fiErr) {
+	sqlite.InitDBFile(dbFile, 1, func(db *sql.DB, isVersion uint, shouldBeVersion uint) {
 		log.Printf("dbfile '%s' does not exist => creating it now\n", dbFile)
-		initTasksTable()
-		initTimesTable()
-	}
+		switch isVersion {
+		case 0:
+			initTasksTable()
+			initTimesTable()
+		}
+	})
 
 	log.Println("DB Init")
 }
 
 // Closes the database connection (call via defer, right after you called InitDB)
 func DeInitDB() {
-	if db != nil {
-		db.Close()
-		db = nil
-		log.Println("DB DeInit")
-	}
+	sqlite.DeInitDB()
 }
 
 // Check if an error has todo with a unique key already existing
 func IsUniqueContraintError(err error) bool {
-	if err == nil {
-		return false
-	}
-	return strings.HasPrefix(err.Error(), "UNIQUE constraint failed")
+	return sqlite.IsUniqueContraintError(err)
 }

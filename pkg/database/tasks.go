@@ -6,11 +6,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/rocco-gossmann/tnt/pkg/utils"
+	sqlite "github.com/rocco-gossmann/go_sqliteutils"
+	utils "github.com/rocco-gossmann/go_utils"
 )
 
 func initTasksTable() {
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, textkey TEXT UNIQUE, name TEXT)")
+	_, err := sqlite.ExecStatement("CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, textkey TEXT UNIQUE, name TEXT)")
 	utils.Err(err)
 }
 
@@ -47,7 +48,7 @@ func GetTaskList(search string) (ret []Task, err error) {
 		searches = append(searches, "%")
 	}
 
-	rows, err = QueryStatement(fmt.Sprintf(`
+	rows, err = sqlite.QueryStatement(fmt.Sprintf(`
 		SELECT
 			ta.id,
 			ta.textkey,
@@ -86,7 +87,7 @@ func internal_GenerateTaskKey(taskName string) (string, uint, error) {
 	taskKey := GenerateTaskKey(taskName)
 	var taskId sql.NullInt64
 
-	taskRow, err := RowQueryStatement("SELECT id FROM tasks WHERE textkey = ?", taskKey)
+	taskRow, err := sqlite.RowQueryStatement("SELECT id FROM tasks WHERE textkey = ?", taskKey)
 	utils.Err(err)
 	err = taskRow.Scan(&taskId)
 
@@ -117,7 +118,7 @@ func GetTaskByName(taskName string) (t Task, err error) {
 
 func GetTaskById(iTaskId uint) (t Task, err error) {
 
-	res, err := QueryStatement("SELECT id, textkey, name from tasks where id=?", iTaskId)
+	res, err := sqlite.QueryStatement("SELECT id, textkey, name from tasks where id=?", iTaskId)
 
 	if err != nil {
 		return
@@ -166,7 +167,7 @@ func (tasks TaskList) ExtractTaskListNames() []string {
 
 func AddTask(taskName string) error {
 	taskKey := GenerateTaskKey(taskName)
-	_, err := ExecStatement("INSERT INTO tasks(textkey, name) VALUES (?, ?)", taskKey, taskName)
+	_, err := sqlite.ExecStatement("INSERT INTO tasks(textkey, name) VALUES (?, ?)", taskKey, taskName)
 
 	if err != nil {
 		return err
@@ -183,15 +184,15 @@ func RenameTask(taskId uint, newName string) (sql.Result, error) {
 		utils.Failf("Task '%s' already exists. Please choose another new name.", newName)
 	}
 
-	return ExecStatement("UPDATE tasks SET textkey = ?, name = ? WHERE id = ?", taskKey, newName, taskId)
+	return sqlite.ExecStatement("UPDATE tasks SET textkey = ?, name = ? WHERE id = ?", taskKey, newName, taskId)
 }
 
 func DropTask(taskId uint) (int64, error) {
-	_, err := ExecStatement("DELETE FROM times WHERE taskId = ?", taskId)
+	_, err := sqlite.ExecStatement("DELETE FROM times WHERE taskId = ?", taskId)
 	if err != nil {
 		return 0, err
 	}
-	r, err := ExecStatement("DELETE FROM tasks WHERE id = ?", taskId)
+	r, err := sqlite.ExecStatement("DELETE FROM tasks WHERE id = ?", taskId)
 	if err != nil {
 		return 0, err
 	}
@@ -217,7 +218,7 @@ func GetTimeSums(iTaskId uint) []TimeSum {
 	// if no taskFilter is applyed
 	// => Count potential results, to define slice size
 	if iSizeLimit == 0 {
-		res, err := QueryStatement(
+		res, err := sqlite.QueryStatement(
 			"SELECT COUNT(DISTINCT taskId) FROM times",
 		)
 		utils.Err(err)
@@ -229,7 +230,7 @@ func GetTimeSums(iTaskId uint) []TimeSum {
 		res.Close()
 	}
 
-	res, err := QueryStatement(`
+	res, err := sqlite.QueryStatement(`
 		SELECT
 			ta.name,
 			sum(unixepoch(ti.end) - unixepoch(ti.start)) total
