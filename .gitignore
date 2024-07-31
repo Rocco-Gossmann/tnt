@@ -7,3 +7,6 @@ tnt.win.x86_64.exe
 debug.run
 .vscode
 pkg/.DS_Store
+tnt.linux.arm
+tnt.mac.arm
+tnt.mac.x86_64

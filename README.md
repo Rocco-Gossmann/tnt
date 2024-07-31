@@ -26,7 +26,7 @@ This tool is meant to make things easier by documenting when and how long certai
 
 # installation
 - grab one of the binaries from the [Releases - Section](https://github.com/Rocco-Gossmann/tnt/releases/latest)
-- rename it to `tnt` (for Linux/Unix) or `tnt.exe` (for Windows)
+- rename it to `tnt` (for Linux/Unix/Mac) or `tnt.exe` (for Windows)
 - put it into a directory that is listed in your $PATH or %PATH%
 - setup the Autocompletion as described further down in [Autocompletion](#shell---autocompletion)
 Done
@@ -228,38 +228,36 @@ That way, you don't need to have the App open at all times, just when you need t
 # Build it yourself
 
 - Install GO (https://go.dev/doc/install) 
+- Make sure `make` is installed on your system
 - clone this repo
 ```bash
 git clone https://github.com/Rocco-Gossmann/tnt.git
 ```
+
 - Enter the directory
 ```bash
 cd tnt
 ```
 
-- Build the project
+- Run
 ```bash
-CGO_ENABLED=1 go build -ldflags="-s -w -X main.Version=`git describe --tags --abbrev=0`"
+make go.sum
 ```
 
-- Copy the `tnt` file into one of the directories listed by your environment vars $PATH or %PATH% var
-- or extend $PATH 
+- Build the project
 ```bash
-echo "export PATH=\"`pwd`:\$PATH\"" >> ~/.bashrc
-
-# or for ZSH
-
-echo "export PATH=\"`pwd`:\$PATH\"" >> ~/.zshrc
+make tnt #to build für your specific system
+# or 
+make all #to build all other versions
 ```
 
 Should you want to change anything regarding the Web-Interface, 
-please use the [Tailwind-CLI](https://github.com/tailwindlabs/tailwindcss/releases/latest) to compile the `main.tw.css` to into the `main.css`.
- 
-call
+please make sure [Tailwind-CLI](https://github.com/tailwindlabs/tailwindcss/releases/latest) is installed on your system.
+Then run 
 ```bash
-make 
-```
-after you made your changes
+make css && make
+``` 
+
 
 
 
